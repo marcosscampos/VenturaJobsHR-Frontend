@@ -16,13 +16,6 @@ const actions = {
       commit(Mutation.GET_ALL_JOBS, reason)
     })
   },
-  async getJob({commit}, payload) {
-    this.$axios.$get(`/v1/jobs/${payload.id}`).then(response => {
-      commit(Mutation.GET_JOB, response)
-    }, (reason) => {
-      commit(Mutation.GET_JOB, reason)
-    })
-  }
 }
 
 const mutations = {
@@ -34,9 +27,6 @@ const mutations = {
       state.error = null
     }
   },
-  [Mutation.GET_JOB](state, payload) {
-    state.job = payload
-  }
 }
 
 export default {

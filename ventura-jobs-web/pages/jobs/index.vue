@@ -1,14 +1,14 @@
 <template>
   <v-container fluid >
     <v-row dense>
-      <v-col v-for="job in jobs" :key="job.id" :cols="flex">
-        <v-card max-width="500" min-height="170" max-height="250" class="card card__utils" :to="`jobs/${job.id}`">
-          <v-card-title>{{ job.title.slice(0, 20) }}</v-card-title>
-          <v-card-text>{{ job.body.slice(0, 35) }}...</v-card-text>
+      <v-col v-for="job in jobs.Data" :key="job.Id" :cols="flex">
+        <v-card max-width="500" min-height="170" max-height="250" class="card card__utils" :to="`jobs/${job.Id}`">
+          <v-card-title>{{ job.Name }}</v-card-title>
+          <v-card-text>{{ job.Description }}</v-card-text>
         </v-card>
       </v-col>
     </v-row>
-    <v-pagination v-model="page" :length="page_number" total-visible="5" @input="onChange"></v-pagination>
+<!--    <v-pagination v-model="page" :length="page_number" total-visible="5" @input="onChange"></v-pagination>-->
   </v-container>
 </template>
 

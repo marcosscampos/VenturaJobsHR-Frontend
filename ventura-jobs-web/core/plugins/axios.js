@@ -4,10 +4,13 @@ export default function({ $axios, redirect }, inject) {
   const httpClient = $axios.create({
     headers: {
       common: {
-        Accept: 'text/plain, */*'
+        Accept: 'application/json, text/plain, */*',
+        ContentType: 'application/json',
       }
     }
   })
+
+  httpClient.baseURL = process.env.API_URL;
 
   $axios.onRequest(config => {
     const token = getToken()

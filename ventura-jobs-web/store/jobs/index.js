@@ -10,10 +10,17 @@ const getters = {}
 
 const actions = {
   async getAllJobs({commit}, payload) {
-    this.$axios.$get(`/posts?_page=${payload.page}`).then(response => {
+    this.$axios.$get('/v1/jobs').then(response => {
       commit(Mutation.GET_ALL_JOBS, response)
     }, (reason) => {
       commit(Mutation.GET_ALL_JOBS, reason)
+    })
+  },
+  async getJob({commit}, payload) {
+    this.$axios.$get(`/v1/jobs/${payload.id}`).then(response => {
+      commit(Mutation.GET_JOB, response)
+    }, (reason) => {
+      commit(Mutation.GET_JOB, reason)
     })
   }
 }
@@ -26,6 +33,9 @@ const mutations = {
       state.jobs = payload
       state.error = null
     }
+  },
+  [Mutation.GET_JOB](state, payload) {
+    state.job = payload
   }
 }
 

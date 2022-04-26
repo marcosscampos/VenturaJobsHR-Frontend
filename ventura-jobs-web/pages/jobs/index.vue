@@ -32,6 +32,7 @@ export default {
   },
   beforeMount() {
     this.$store.dispatch('jobs/getAllJobs')
+    console.log(process.env.NUXT_ENV_API_URL)
   },
   data() {
     return {

@@ -1,12 +1,14 @@
 import colors from 'vuetify/es5/util/colors'
 
-require('dotenv').config()
-
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
   publicRuntimeConfig: {
+    NUXT_ENV_API_URL: process.env.NUXT_ENV_API_URL
+  },
+
+  env: {
     NUXT_ENV_API_URL: process.env.NUXT_ENV_API_URL
   },
 

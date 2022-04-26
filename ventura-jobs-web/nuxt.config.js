@@ -6,7 +6,9 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
-  // mode: 'spa',
+  publicRuntimeConfig: {
+    NUXT_ENV_API_URL: process.env.NUXT_ENV_API_URL
+  },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {

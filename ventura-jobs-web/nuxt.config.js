@@ -32,8 +32,6 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'bootstrap/dist/css/bootstrap.css',
-    'bootstrap-vue/dist/bootstrap-vue.css',
     '~/assets/css/main.css'
   ],
 
@@ -55,7 +53,6 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    'bootstrap-vue/nuxt',
     [
       '@nuxtjs/firebase',
       {
@@ -79,10 +76,6 @@ export default {
     ],
     '@nuxtjs/dotenv'
   ],
-
-  // router: {
-  //   middleware: 'auth'
-  // },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

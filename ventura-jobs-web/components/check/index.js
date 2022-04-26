@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+// import '@sweetalert2/theme-dark'
 
 const checar = {
   hasError(erro, callback) {
@@ -23,7 +24,7 @@ const checar = {
       }
       // eslint-disable-next-line
       Swal.fire({
-        type: 'error',
+        icon: 'error',
         title: erro.message,
         html: mensagem
       });
@@ -33,7 +34,7 @@ const checar = {
       Swal.fire({
         title: 'Sucesso!',
         text: 'Operação realizada com sucesso!',
-        type: 'success',
+        icon: 'success',
         timer: 3000,
         showConfirmButton: false
       });
@@ -62,7 +63,7 @@ const checar = {
       }
       // eslint-disable-next-line
       Swal.fire({
-        type: 'error',
+        icon: 'error',
         title: erro.message,
         html: mensagem
       });
@@ -75,7 +76,7 @@ const checar = {
     // eslint-disable-next-line
     Swal.fire({
       title: msg != "" ? msg : 'Deseja confirmar a operação?',
-      type: 'warning',
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
@@ -103,11 +104,11 @@ const checar = {
   permission401(v) {
     return true;
     if (!this.permission(v)) {
-      if (process.env.API_URL === '/') {
+      if (process.env.NUXT_ENV_API_URL === '/') {
         window.location = '/401';
       }
       else {
-        window.location = process.env.API_URL + '/401';
+        window.location = process.env.NUXT_ENV_API_URL + '/401';
       }
     }
   }

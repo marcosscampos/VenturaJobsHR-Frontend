@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid >
+  <v-container fluid>
     <v-row dense>
       <v-col v-for="job in jobs.Data" :key="job.Id" :cols="flex">
         <v-card max-width="500" min-height="170" max-height="250" class="card card__utils" :to="`jobs/${job.Id}`">
@@ -8,13 +8,12 @@
         </v-card>
       </v-col>
     </v-row>
-<!--    <v-pagination v-model="page" :length="page_number" total-visible="5" @input="onChange"></v-pagination>-->
+    <!--    <v-pagination v-model="page" :length="page_number" total-visible="5" @input="onChange"></v-pagination>-->
   </v-container>
 </template>
 
 <script>
-import {GET_ALL_JOBS} from "~/store/jobs/mutationTypes"
-import {mapActions, mapState} from 'vuex'
+import {mapActions, mapGetters, mapMutations, mapState} from 'vuex'
 
 export default {
   name: 'jobs',
@@ -23,11 +22,16 @@ export default {
       title: "Vagas"
     }
   },
-  computed: mapState({
-    jobs: state => state.jobs.jobs
-  }),
+  computed: {
+    ...mapState({
+      jobs: state => state.jobs.jobs
+    }),
+    ...mapGetters({
+      jobs: "jobs/listJobs"
+    })
+  },
   beforeMount() {
-    this.getJobs()
+    this.$store.dispatch('jobs/getAllJobs')
   },
   data() {
     return {
@@ -37,27 +41,12 @@ export default {
       loader: null,
     }
   },
-  mounted() {
-    this.unsub = this.$store.subscribe((mutation, state) => {
-      if (mutation.type === `jobs/${GET_ALL_JOBS}`) {
-        this.page_number = Math.round(this.jobs.length)
-      }
-    })
-  },
   methods: {
     onChange() {
       this.$router.push({query: {page: this.page}});
-      this.getJobs()
     },
-    getJobs() {
-      this.$store.dispatch({type: "jobs/getAllJobs", page: this.page})
-    },
-    ...mapActions(
-      'jobs', [GET_ALL_JOBS]
-    )
-  },
-  beforeDestroy() {
-    this.unsub()
+    ...mapActions(['jobs/getAllJobs']),
+    ...mapMutations(['jobs/GET_ALL_JOBS'])
   },
   getJob(id) {
     this.$router.push({path: `/jobs/${id}`})

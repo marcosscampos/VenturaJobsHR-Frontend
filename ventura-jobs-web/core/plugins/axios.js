@@ -10,7 +10,7 @@ export default function({ $axios, redirect }, inject) {
     }
   })
 
-  httpClient.baseURL = process.env.API_URL;
+  httpClient.baseURL = process.env.NUXT_ENV_API_URL;
 
   $axios.onRequest(config => {
     const token = getToken()

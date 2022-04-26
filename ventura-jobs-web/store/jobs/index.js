@@ -1,39 +1,17 @@
-import * as Mutation from './mutationTypes';
+import mutations from "@/store/jobs/mutations";
+import actions from '@/store/jobs/actions';
+import getters from "@/store/jobs/getters";
 
-const state = {
+const state = () => ({
   jobs: [],
   job: {},
-  error: {}
-}
-
-const getters = {}
-
-const actions = {
-  async getAllJobs({commit}, payload) {
-    this.$axios.$get('/v1/jobs').then(response => {
-      commit(Mutation.GET_ALL_JOBS, response)
-    }, (reason) => {
-      commit(Mutation.GET_ALL_JOBS, reason)
-    })
-  },
-}
-
-const mutations = {
-  [Mutation.GET_ALL_JOBS](state, payload) {
-    if (payload.errors != null || payload.statusCode === 500) {
-      state.error = payload
-    } else {
-      state.jobs = payload
-      state.error = null
-    }
-  },
-}
+  error: null
+})
 
 export default {
   namespaced: true,
   state,
-  getters,
   actions,
+  getters,
   mutations
 }
-

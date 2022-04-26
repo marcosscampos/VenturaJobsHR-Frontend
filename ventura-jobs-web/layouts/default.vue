@@ -3,7 +3,7 @@
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
-      :clipped="clipped"
+      :clipped="true"
       fixed
       app
     >
@@ -23,9 +23,17 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <v-list-item @click="logout" v-if="user != null">
+        <v-list-item-action>
+          <v-icon>mdi-logout</v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title v-text="Logout" />
+        </v-list-item-content>
+      </v-list-item>
     </v-navigation-drawer>
     <v-app-bar
-      :clipped-left="clipped"
+      :clipped-left="true"
       fixed
       app
     >
@@ -33,14 +41,9 @@
       <v-btn
         icon
         @click.stop="miniVariant = !miniVariant"
+        @click="setVariant"
       >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
+        <v-icon>mdi-{{ `chevron-${!miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
       <v-toolbar-title v-text="title" @click="$router.push('/')" class="toolbar-title"/>
       <v-spacer />
@@ -61,9 +64,10 @@ export default {
   name: 'DefaultLayout',
   data () {
     return {
+      user: null,
+      Logout: 'Logout',
       clipped: false,
       drawer: false,
-      fixed: false,
       items: [
         {
           icon: 'mdi-apps',
@@ -86,6 +90,24 @@ export default {
       rightDrawer: false,
       title: 'Ventura Jobs HR'
     }
+  },
+  beforeMount() {
+    this.miniVariant = JSON.parse(localStorage.getItem('miniVariant'))
+  },
+  mounted() {
+  },
+  methods: {
+    logout() {
+      console.log("deslogou")
+    },
+    setVariant() {
+      if(localStorage.getItem('miniVariant') == null)
+          localStorage.setItem('miniVariant', this.miniVariant)
+      else {
+        localStorage.removeItem('miniVariant')
+        localStorage.setItem('miniVariant', this.miniVariant)
+      }
+    },
   }
 }
 </script>

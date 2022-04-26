@@ -33,6 +33,7 @@ export default {
       propsJob: {}
     }
   },
+  middleware: ['auth', 'roles'],
   async asyncData({$axios, params}) {
     const job = await $axios.$get(`/v1/jobs/${params.id}`);
     return {job}
@@ -49,7 +50,7 @@ export default {
   filters: {
     moment: (date) => {
       if (date != null) {
-        return moment(date).format("DD/MM/YYYY - HH:mm:ss")
+        return moment(date).format("DD/MM/YYYY")
       } else {
         return "";
       }

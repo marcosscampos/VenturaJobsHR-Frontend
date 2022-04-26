@@ -1,13 +1,12 @@
 import colors from 'vuetify/es5/util/colors'
+
 require('dotenv').config()
 
 export default {
-  transition: {
-    name: 'home',
-    mode: 'out-in'
-  },
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
+
+  // mode: 'spa',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -67,12 +66,19 @@ export default {
         },
         services: {
           auth: true,
-          database: true
+          database: true,
+          functions: true,
+          firestore: true,
+          realtimeDb: true
         }
       }
     ],
     '@nuxtjs/dotenv'
   ],
+
+  // router: {
+  //   middleware: 'auth'
+  // },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -84,7 +90,7 @@ export default {
 
   proxy: {
     '/v1/jobs': {
-      target: process.env.API_URL,
+      target: process.env.NUXT_ENV_API_URL,
       // pathRewrite: { '^/v1/jobs': '' }
     }
   },

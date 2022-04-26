@@ -32,7 +32,6 @@ export default {
   },
   beforeMount() {
     this.$store.dispatch('jobs/getAllJobs')
-    console.log(this.jobs)
   },
   data() {
     return {

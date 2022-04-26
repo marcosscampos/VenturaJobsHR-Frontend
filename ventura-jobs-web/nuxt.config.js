@@ -74,8 +74,22 @@ export default {
         }
       }
     ],
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/auth-next'
   ],
+
+
+  auth: {
+    strategies: {
+      google: {
+        clientId: "353670813955-227179c13o1tff5ue3omguf8ktmo523h.apps.googleusercontent.com",
+        clientSecret: "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",
+        redirectUri: "https://venturajobshr.firebaseapp.com/__/auth/handler",
+        codeChallengeMethod: "",
+        responseType: "id_token token",
+      }
+    }
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -87,8 +101,7 @@ export default {
 
   proxy: {
     '/v1/jobs': {
-      target: process.env.NUXT_ENV_API_URL,
-      // pathRewrite: { '^/v1/jobs': '' }
+      target: process.env.NUXT_ENV_API_URL
     }
   },
 

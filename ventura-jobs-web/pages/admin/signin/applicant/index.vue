@@ -6,6 +6,7 @@
       <v-text-field v-model="applicant.password" label="Digite sua senha" type="password"></v-text-field>
       <div style="display: flex">
         <v-btn @click="onsubmit" style="margin: auto !important;">Logar</v-btn>
+        <v-btn style="margin: auto" @click="loginWithGoogle">Logar com o Google(Não funcional, nem clica)</v-btn>
       </div>
     </v-form>
     <p style="margin-top: 30px; font-size: 1.2rem; font-weight: 300">Don't have account?
@@ -31,6 +32,10 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    async loginWithGoogle() {
+      let googleProvider = await this.$auth.loginWith('google', { params: { prompt: 'select_account' } })
+      // await this.$fire.auth.signInWithPopup()
     }
   }
 }

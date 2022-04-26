@@ -6,7 +6,13 @@ export default async ({app, route, redirect}) => {
       redirect('/admin/signin/company')
     } else {
       let token = await user.getIdTokenResult()
-      saveToken(token.token)
+
+      if (token.claims.role != 'company') {
+        redirect('/admin/signin/company')
+        await app.$fire.auth.signOut()
+      } else {
+        saveToken(token.token)
+      }
     }
   })
 }

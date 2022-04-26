@@ -61,7 +61,7 @@ export default {
 </script>
 
 <style scoped>
-.arrow__utils:hover {
-  text-decoration: none !important;
+.arrow__utils {
+  text-decoration: none;
 }
 </style>

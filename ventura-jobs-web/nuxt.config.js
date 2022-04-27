@@ -3,13 +3,16 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
-
   publicRuntimeConfig: {
-    NUXT_ENV_API_URL: process.env.NUXT_ENV_API_URL
+    axios: {
+      browserBaseURL: process.env.NUXT_ENV_API_URL
+    }
   },
 
-  env: {
-    NUXT_ENV_API_URL: process.env.NUXT_ENV_API_URL
+  privateRuntimeConfig: {
+    axios: {
+      baseURL: process.env.NUXT_ENV_API_URL
+    }
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -20,13 +23,13 @@ export default {
       lang: 'en'
     },
     meta: [
-      {charset: 'utf-8'},
-      {name: 'viewport', content: 'width=device-width, initial-scale=1'},
-      {hid: 'description', name: 'description', content: ''},
-      {name: 'format-detection', content: 'telephone=no'}
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' },
+      { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
 
@@ -96,18 +99,12 @@ export default {
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
     baseURL: '/',
-    credentials: false,
     proxy: true,
-    headers: {
-      common: {
-        Accept: 'application/json'
-      }
-    }
   },
 
   proxy: {
     '/v1/jobs': {
-      target: process.env.NUXT_ENV_API_URL
+      target: process.env.NUXT_ENV_API_URL,
     }
   },
 

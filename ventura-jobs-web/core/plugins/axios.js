@@ -6,6 +6,7 @@ export default function({ $axios, redirect }, inject) {
       common: {
         Accept: 'application/json, text/plain, */*',
         ContentType: 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }
     }
   })
@@ -17,8 +18,8 @@ export default function({ $axios, redirect }, inject) {
 
     // if(token && config.headers) {
     //   config.headers["Authorization"] = `Bearer ${token}`
-    // }
-
+    // 
+  
     return config
   })
 

@@ -1,6 +1,6 @@
-const getAllJobs = function ({commit}) {
-  this.$axios.$get('/v1/jobs').then(response => {
-    commit('GET_ALL_JOBS', response)
+const getAllJobs = function ({commit}, payload) {
+  this.$axios.$get(`/v1/jobs/criteria?Page=${payload.page}&Size=${payload.size}`).then(response => {
+    commit('GET_ALL_JOBS', response.Data)
   }, (reason) => {
     commit('GET_ALL_JOBS', reason)
   })

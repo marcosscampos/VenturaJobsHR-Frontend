@@ -13,11 +13,11 @@ export default function({ $axios, redirect }, inject) {
   httpClient.baseURL = process.env.NUXT_ENV_API_URL;
 
   $axios.onRequest(config => {
-    const token = getToken()
+    // const token = getToken()
 
-    if(token && config.headers) {
-      config.headers["Authorization"] = `Bearer ${token}`
-    }
+    // if(token && config.headers) {
+    //   config.headers["Authorization"] = `Bearer ${token}`
+    // }
 
     return config
   })

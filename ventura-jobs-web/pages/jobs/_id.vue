@@ -1,47 +1,58 @@
 <template>
-  <v-container>
-    <v-card>
-      <Nuxt-Link to="/jobs" class="arrow__utils">
-        <v-btn icon height="50" width="50">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-      </Nuxt-Link>
-      <v-card-title>{{ job.Data.Name }}</v-card-title>
-      <v-card-subtitle>R$: {{ formatPrice(job.Data.Salary.Value) }}</v-card-subtitle>
-      <v-card-text>{{ job.Data.Description }}</v-card-text>
-      <v-card-text>Pode se candidatar até o dia: {{ job.Data.FinalDate | moment }}</v-card-text>
-      <v-card-actions>
-        <v-icon icon height="50" width="50">mdi-pencil-plus-outline</v-icon>
-      </v-card-actions>
-    </v-card>
-
-  </v-container>
+  <div class="container container__colors">
+    <div class="flex">
+      <div class="flex-none w-14">
+        <Nuxt-Link to="/jobs" class="arrow__utils">
+          <v-btn icon height="50" width="50">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+        </Nuxt-Link>
+      </div>
+      <div class="flex-initial m-auto">
+        <h1 class="text-2xl font-medium">{{ job.Data.Name }}</h1>
+        <h5 class="text-base font-normal">Descrição da vaga</h5>
+        <p class="font-light">{{ job.Data.Description }}</p>
+        <div class="flex">
+          <p class="font-bold">Salário:</p>
+          <p class="font-light ml-2">
+            R$ {{ formatPrice(job.Data.Salary.Value) }}
+          </p>
+        </div>
+        <p>
+          <v-icon icon style="font-size: 21px !important">
+            mdi-calendar-clock
+          </v-icon>
+          Esta vaga irá se encerrar {{ job.Data.FinalDate | moment }}
+        </p>
+        <v-btn>Candidatar-se</v-btn>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import moment from "moment";
 
 export default {
-  name: 'job',
+  name: "job",
   head() {
     return {
-      title: `Vaga: ${this.job.Data.Name}`
-    }
+      title: `Vaga: ${this.job.Data.Name}`,
+    };
   },
   data() {
     return {
-      propsJob: {}
-    }
+      propsJob: {},
+    };
   },
-  middleware: ['auth', 'roles'],
-  async asyncData({$axios, params}) {
+  async asyncData({ $axios, params }) {
     const job = await $axios.$get(`/v1/jobs/${params.id}`);
-    return {job}
+    return { job };
   },
   methods: {
     formatPrice(value) {
       if (value != null && value != undefined) {
-        let val = (value / 1).toFixed(2).replace('.', ',');
+        let val = (value / 1).toFixed(2).replace(".", ",");
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       }
       return 0;
@@ -50,18 +61,24 @@ export default {
   filters: {
     moment: (date) => {
       if (date != null) {
-        return moment(date).format("DD/MM/YYYY")
+        moment.locale("pt-br");
+        return moment(date).fromNow();
       } else {
         return "";
       }
-    }
-  }
-}
-
+    },
+  },
+};
 </script>
 
 <style scoped>
 .arrow__utils {
   text-decoration: none;
+}
+
+.container__colors {
+  background: #363636;
+  margin-top: 20px;
+  border-radius: 10px;
 }
 </style>

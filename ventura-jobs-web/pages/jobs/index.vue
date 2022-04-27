@@ -1,19 +1,77 @@
 <template>
-  <v-container fluid>
-    <v-row dense>
-      <v-col v-for="job in jobs.Data" :key="job.Id" :cols="flex">
-        <v-card max-width="500" min-height="170" max-height="250" class="card card__utils" :to="`jobs/${job.Id}`">
-          <v-card-title>{{ job.Name }}</v-card-title>
-          <v-card-text>{{ job.Description }}</v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-    <!--    <v-pagination v-model="page" :length="page_number" total-visible="5" @input="onChange"></v-pagination>-->
+  <v-container>
+    <!-- <div>
+      <v-form class="flex">
+        <v-text-field label="Salário" style="max-width: 45%"></v-text-field>
+               <v-menu
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="false"
+          :return-value.sync="date"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="date"
+              label="Buscar por data"
+              prepend-icon="mdi-calendar"
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="date"
+            no-title
+            scrollable
+          >
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              color="primary"
+              @click="menu = false"
+            >
+              Cancelar
+            </v-btn>
+            <v-btn
+              text
+              color="primary"
+              @click="$refs.menu.save(date)"
+            >
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-menu>
+      </v-form>
+    </div> -->
+    <div class="grid grid-cols-2 gap-4">
+      <v-card v-for="job in jobs.Data" :key="job.Id" min-height="170" max-height="250"
+              class="card card__utils" :to="`jobs/${job.Id}`">
+        <v-card-title class="break-words">{{ job.Name }}</v-card-title>
+        <v-card-text>{{ job.Description }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-icon icon style="font-size: 21px !important; margin-right: 5px !important;">mdi-calendar-clock</v-icon>
+          {{ job.FinalDate | moment}}
+          </v-card-actions>
+      </v-card>
+    </div>
+       <v-pagination
+         circle
+         v-model="pagination.page"
+         :length="total"
+         total-visible="5"
+         class="m-auto"
+         @input="onChange">
+       </v-pagination>
   </v-container>
 </template>
 
 <script>
 import {mapActions, mapGetters, mapMutations, mapState} from 'vuex'
+import moment from "moment";
 
 export default {
   name: 'jobs',
@@ -31,32 +89,59 @@ export default {
     })
   },
   beforeMount() {
-    this.$store.dispatch('jobs/getAllJobs')
+    this.getJobs()
   },
   data() {
     return {
+      date: '',
+      menu: '',
       flex: 6,
-      page: parseInt(this.$route.query.page, 10) || 1,
-      page_number: null,
-      loader: null,
+      pagination: {
+        page: 1,
+        size: 10,
+      },
+      total: 1
     }
+  },
+  filters: {
+    moment: (date) => {
+      if (date != null) {
+        return moment(date).format("DD/MM/YYYY")
+      } else {
+        return "";
+      }
+    }
+  },
+  mounted() {
+    this.unsub = this.$store.subscribe((mutation, state) => {
+      if(mutation.type == 'jobs/GET_ALL_JOBS') {
+        this.total = (Math.ceil(this.jobs.Total / this.jobs.PageSize))
+      }
+    })
   },
   methods: {
     onChange() {
-      this.$router.push({query: {page: this.page}});
+      this.$router.push({query: {page: this.pagination.page, size: this.pagination.size}});
+      this.getJobs();
     },
     ...mapActions(['jobs/getAllJobs']),
-    ...mapMutations(['jobs/GET_ALL_JOBS'])
+    ...mapMutations(['jobs/GET_ALL_JOBS']),
+    getJobs() {
+      this.$store.dispatch({type: 'jobs/getAllJobs', size: this.pagination.size, page: this.pagination.page})
+    }
   },
   getJob(id) {
     this.$router.push({path: `/jobs/${id}`})
+  },
+  beforeDestroy() {
+    this.unsub()
   }
 }
 </script>
 <style>
 .card__utils:hover {
   text-decoration: none !important;
-  transform: scale(1.05, 1.05);
+  transform: scale(1.03, 1.03);
   transition: 1s all;
 }
 

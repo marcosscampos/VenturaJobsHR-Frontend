@@ -1,4 +1,4 @@
-import {getToken, saveToken} from "@/core/services/token";
+import {saveToken} from "@/core/services/token";
 
 export default async ({app, route, redirect}) => {
   app.$fire.auth.onAuthStateChanged(async user => {
@@ -7,7 +7,7 @@ export default async ({app, route, redirect}) => {
     } else {
       let token = await user.getIdTokenResult()
 
-      if(token.claims.role != 'applicant') {
+      if (token.claims.role != 'applicant') {
         redirect('/admin/signin/applicant')
         await app.$fire.auth.signOut()
       } else {

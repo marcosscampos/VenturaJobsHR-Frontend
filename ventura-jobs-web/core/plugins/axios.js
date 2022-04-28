@@ -1,25 +1,24 @@
-import {getToken} from "~/core/services/token";
-
-export default function({ $axios, redirect }, inject) {
+export default function({ $axios, redirect, app }, inject) {
   const httpClient = $axios.create({
+    baseURL: process.env.NUXT_ENV_API_URL,
     headers: {
       common: {
-        Accept: 'application/json, text/plain, */*',
-        ContentType: 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': 'https://ventura-jobs.herokuapp.com, http://localhost:3000',
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/plain, */*'
       }
-    }
+    },
+    credentials: false
   })
-
-  httpClient.baseURL = process.env.NUXT_ENV_API_URL;
 
   $axios.onRequest(config => {
     // const token = getToken()
 
     // if(token && config.headers) {
     //   config.headers["Authorization"] = `Bearer ${token}`
-    // 
-  
+    //
+
     return config
   })
 
@@ -28,6 +27,10 @@ export default function({ $axios, redirect }, inject) {
 
     if(code === 400)
       redirect('/400')
+  })
+
+  $axios.onRequestError(err => {
+    console.log(err)
   })
 
   inject('httpClient', httpClient)

@@ -8,29 +8,56 @@
       app
     >
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
+        <v-list-item to="/" router exact class="mb-2">
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-apps</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
+            <v-list-item-title>Página Principal</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item to="/jobs" router exact  class="mb-2">
+          <v-list-item-action>
+            <v-icon>mdi-chart-bubble</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Vagas</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="user == null">
+          <v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                Login
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-list>
+                  <v-list-item to="/company/login" router exact class="mb-3.5">
+                    <v-list-item-action>
+                      <v-icon>mdi-briefcase</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>Login como empresa</v-list-item-content>
+                  </v-list-item>
+                  <v-list-item to="/applicant/login" router exact>
+                    <v-list-item-action>
+                      <v-icon>mdi-account</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>Login como candidato</v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-list-item>
+        <v-list-item  class="mb-2" v-else @click="logout">
+          <v-list-item-action>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Logout</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <v-list-item @click="logout" v-if="user != null">
-        <v-list-item-action>
-          <v-icon>mdi-logout</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title v-text="Logout" />
-        </v-list-item-content>
-      </v-list-item>
     </v-navigation-drawer>
     <v-app-bar
       :clipped-left="true"
@@ -65,41 +92,16 @@ export default {
   data () {
     return {
       user: null,
-      Logout: 'Logout',
       clipped: false,
       drawer: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Página Principal',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Vagas',
-          to: '/jobs'
-        },
-        {
-          icon: 'mdi-account',
-          title: 'Login',
-          to: '/admin/signin'
-        }
-      ],
       miniVariant: false,
-      right: true,
-      rightDrawer: false,
       title: 'Ventura Jobs HR'
     }
   },
   beforeMount() {
     this.miniVariant = JSON.parse(localStorage.getItem('miniVariant'))
   },
-  mounted() {
-  },
   methods: {
-    logout() {
-      console.log("deslogou")
-    },
     setVariant() {
       if(localStorage.getItem('miniVariant') == null)
           localStorage.setItem('miniVariant', this.miniVariant)
@@ -108,6 +110,15 @@ export default {
         localStorage.setItem('miniVariant', this.miniVariant)
       }
     },
+    logout() {
+      this.$fire.auth.signOut()
+      this.$router.push('/')
+    }
+  },
+  created() {
+    this.$fire.auth.onAuthStateChanged(user => {
+      this.user = user != null || user != undefined ? user.uid : null
+    })
   }
 }
 </script>

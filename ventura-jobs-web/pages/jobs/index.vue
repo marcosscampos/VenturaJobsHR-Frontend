@@ -46,9 +46,10 @@
         </v-menu>
       </v-form>
     </div> -->
+    <v-skeleton-loader v-if="loading" :loading="loading" type="card" max-width="560" max-height="250"></v-skeleton-loader>
     <div class="grid grid-cols-2 gap-4">
       <v-card v-for="job in jobs.Data" :key="job.Id" min-height="170" max-height="250"
-              class="card card__utils" :to="`jobs/${job.Id}`">
+              class="card card__utils" :to="`jobs/${job.Id}`" v-if="!loading">
         <v-card-title class="break-words">{{ job.Name }}</v-card-title>
         <v-card-text>{{ job.Description }}</v-card-text>
         <v-card-actions>
@@ -100,7 +101,8 @@ export default {
         page: 1,
         size: 10,
       },
-      total: 1
+      total: 1,
+      loading: true
     }
   },
   filters: {
@@ -115,6 +117,7 @@ export default {
   mounted() {
     this.unsub = this.$store.subscribe((mutation, state) => {
       if(mutation.type == 'jobs/GET_ALL_JOBS') {
+        this.loading = false;
         this.total = (Math.ceil(this.jobs.Total / this.jobs.PageSize))
       }
     })

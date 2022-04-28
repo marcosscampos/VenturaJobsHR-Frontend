@@ -1,17 +1,17 @@
 <template>
   <v-container>
-    <h1>Company profile</h1>
+    <h1>Applicant profile</h1>
 
     <v-btn @click="logout">Logout</v-btn>
   </v-container>
 </template>
 
 <script>
-import {deleteToken} from '@/core/services/token'
+import {deleteToken} from "@/core/services/token";
 
 export default {
-  name: "company",
-  middleware: 'auth-company',
+  name: "dashboard",
+  middleware: 'auth-applicant',
   head() {
     return {
       title: 'Dashboard'
@@ -21,7 +21,7 @@ export default {
     logout() {
       this.$fire.auth.signOut();
       deleteToken()
-      this.$router.push('/admin/signin/company');
+      this.$router.push('/applicant/login');
     }
   }
 }

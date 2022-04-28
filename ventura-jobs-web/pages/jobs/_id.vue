@@ -1,33 +1,33 @@
 <template>
-  <div class="container container__colors">
-    <div class="flex">
-      <div class="flex-none w-14">
-        <Nuxt-Link to="/jobs" class="arrow__utils">
-          <v-btn icon height="50" width="50">
-            <v-icon>mdi-chevron-left</v-icon>
-          </v-btn>
-        </Nuxt-Link>
-      </div>
-      <div class="flex-initial m-auto">
-        <h1 class="text-2xl font-medium">{{ job.Data.Name }}</h1>
-        <h5 class="text-base font-normal">Descrição da vaga</h5>
-        <p class="font-light">{{ job.Data.Description }}</p>
-        <div class="flex">
-          <p class="font-bold">Salário:</p>
-          <p class="font-light ml-2">
-            R$ {{ formatPrice(job.Data.Salary.Value) }}
-          </p>
+    <div class="container container__colors">
+      <div class="flex">
+        <div class="flex-none w-14">
+          <Nuxt-Link to="/jobs" class="arrow__utils">
+            <v-btn icon height="50" width="50">
+              <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+          </Nuxt-Link>
         </div>
-        <p>
-          <v-icon icon style="font-size: 21px !important">
-            mdi-calendar-clock
-          </v-icon>
-          Esta vaga irá se encerrar {{ job.Data.FinalDate | moment }}
-        </p>
-        <v-btn>Candidatar-se</v-btn>
+        <div class="flex-initial m-auto">
+          <h1 class="text-2xl font-medium">{{ job.Data.Name }}</h1>
+          <h5 class="text-base font-normal">Descrição da vaga</h5>
+          <p class="font-light">{{ job.Data.Description }}</p>
+          <div class="flex">
+            <p class="font-bold">Salário:</p>
+            <p class="font-light ml-2">
+              R$ {{ formatPrice(job.Data.Salary.Value) }}
+            </p>
+          </div>
+          <p>
+            <v-icon icon style="font-size: 21px !important">
+              mdi-calendar-clock
+            </v-icon>
+            Esta vaga irá se encerrar {{ job.Data.FinalDate | moment }}
+          </p>
+          <v-btn>Candidatar-se</v-btn>
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -45,9 +45,9 @@ export default {
       propsJob: {},
     };
   },
-  async asyncData({ $axios, params }) {
+  async asyncData({$axios, params}) {
     const job = await $axios.$get(`/v1/jobs/${params.id}`);
-    return { job };
+    return {job};
   },
   methods: {
     formatPrice(value) {

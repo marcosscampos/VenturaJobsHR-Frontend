@@ -16,7 +16,7 @@
             <v-list-item-title>Página Principal</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/jobs" router exact  class="mb-2">
+        <v-list-item to="/jobs" router exact  class="mb-2" v-if="user != null">
           <v-list-item-action>
             <v-icon>mdi-chart-bubble</v-icon>
           </v-list-item-action>

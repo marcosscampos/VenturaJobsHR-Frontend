@@ -1,28 +1,36 @@
 <template>
   <div class="container">
-    <v-breadcrumbs :items="items">
-      <template v-slot:divider>
-        <v-icon style="color: gray">mdi-chevron-right</v-icon>
-      </template>
-    </v-breadcrumbs>
-    <v-container fluid style="max-width: 500px">
+    <div class="max-w-lg m-auto">
       <v-form>
-        <v-text-field v-model="company.email" label="Digite seu melhor email"></v-text-field>
-        <v-text-field v-model="company.password" label="Digite sua senha" type="password"></v-text-field>
-        <div class="flex flex-col items-center">
-          <v-btn @click="onSubmit" class="w-60" style="height: 46px !important;">Logar</v-btn>
-          <button @click="loginWithGoogle" class="w-60 mt-4 login-with-google-btn" type="button">Logar com o Google
-          </button>
-          <div class="max__width mt-4">
-            <a class="twitter-before"><span class="fontawesome-twitter"></span></a>
-            <button @click="loginWithTwitter" class="w-60 twitter" type="button">Logar com o Twitter</button>
+        <v-card class="p-5">
+          <h1 class="text-center text-2xl font-light mb-4">Entre no seu perfil</h1>
+          <v-text-field v-model="company.email" label="Digite seu melhor email"  placeholder="John Doe"></v-text-field>
+          <v-text-field v-model="company.password" label="Digite sua senha" :type="show ? 'text' : 'password'"
+                        :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show = !show"></v-text-field>
+          <v-btn @click="onSubmit" class="w-full">Entrar</v-btn>
+          <div class="my-7 grid grid-cols-[1fr_auto_1fr] gap-x-2 items-center">
+            <span class="h-0.5 bg-gray-700"/>
+            <span class="text-slate-500 text-sm font-normal">ou</span>
+            <span class="h-0.5 bg-gray-700"/>
           </div>
-          <p class="text-lg font-light mt-4">Don't have account?
-            <NuxtLink to="/company/signup">Signup!</NuxtLink>
+          <div class="flex flex-col gap-3 my-7">
+            <div class="flex justify-center items-center flex-row gap-2">
+              <button @click="loginWithGoogle" class="w-60 login-with-google-btn" type="button">Google</button>
+              <button @click="loginWithTwitter" class="w-60 twitter" type="button">
+                <v-icon icon class="float-left">mdi-twitter</v-icon>
+                Twitter
+              </button>
+            </div>
+          </div>
+          <p class="text-base font-medium mt-4 text-center text-zinc-500">
+            <NuxtLink to="/company/signup">
+              Não tenho cadastro
+              <v-icon class="text-zinc-500">mdi-chevron-right</v-icon>
+            </NuxtLink>
           </p>
-        </div>
+        </v-card>
       </v-form>
-    </v-container>
+    </div>
   </div>
 </template>
 
@@ -38,6 +46,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       company: {},
       items: [
         {

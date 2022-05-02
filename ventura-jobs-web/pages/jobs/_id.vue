@@ -40,6 +40,7 @@ export default {
       title: `Vaga: ${this.job.Data.Name}`,
     };
   },
+  middleware: 'auth-jobs',
   data() {
     return {
       propsJob: {},

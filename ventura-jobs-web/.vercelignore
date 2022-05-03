@@ -1,0 +1,8 @@
+README.md
+.nuxt
+node_modules
+*.log
+.git
+.vscode
+.vercel
+.vercel_cache

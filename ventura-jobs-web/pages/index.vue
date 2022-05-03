@@ -1,22 +1,38 @@
 <template>
   <v-container fluid>
-    <v-data-table :headers="headers"
-                  :items="jobs.Data"
-                  :items-per-page="10"
-                  :loading="loading"
-                  @click:row="handleClick"
-                  class="elevation-1">
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>10 últimas vagas publicadas</v-toolbar-title>
-        </v-toolbar>
-      </template>
-    </v-data-table>
+    <div>
+      <h1 class="text-center text-2xl font-light mb-4">10 últimas vagas publicadas</h1>
+      <v-simple-table>
+        <template v-slot:default>
+          <thead>
+          <tr>
+            <th>Cargo</th>
+            <th>Descrição</th>
+            <th>Cidade</th>
+            <th>Ações</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="item in jobs.Data" :key="item.Id">
+            <td>{{ item.Name }}</td>
+            <td>{{ item.Description }}</td>
+            <td>?</td>
+            <td>
+              <v-btn @click="handleClick(item.Id)">
+                <v-icon>mdi-eye</v-icon>
+              </v-btn>
+            </td>
+          </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+    </div>
   </v-container>
 </template>
 
 <script>
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import moment from "moment";
 
 export default {
   name: 'IndexPage',
@@ -27,6 +43,15 @@ export default {
     ...mapGetters({
       jobs: "jobs/listJobs"
     })
+  },
+  filters: {
+    moment: (date) => {
+      if (date != null) {
+        return moment(date).format("DD/MM/YYYY")
+      } else {
+        return "";
+      }
+    }
   },
   head() {
     return {
@@ -60,7 +85,7 @@ export default {
     ...mapActions(['jobs/getAllJobs']),
     ...mapMutations(['jobs/GET_ALL_JOBS']),
     handleClick(value) {
-      this.$router.push({path: `/jobs/${value.Id}`})
+      this.$router.push({path: `/jobs/${value}`})
     }
   },
   beforeDestroy() {

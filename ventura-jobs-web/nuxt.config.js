@@ -40,7 +40,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/core/plugins/axios'
+    '~/core/plugins/axios',
+    { src: '~/core/plugins/VueEditor', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

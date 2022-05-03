@@ -8,7 +8,7 @@
       app
     >
       <v-list>
-        <v-list-item to="/" router exact class="mb-2">
+        <v-list-item to="/" router exact class="mb-2" v-if="user == null">
           <v-list-item-action>
             <v-icon>mdi-apps</v-icon>
           </v-list-item-action>
@@ -16,7 +16,7 @@
             <v-list-item-title>Página Principal</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item to="/jobs" router exact  class="mb-2" v-if="user != null">
+        <v-list-item to="/jobs" router exact class="mb-2" v-if="user != null">
           <v-list-item-action>
             <v-icon>mdi-chart-bubble</v-icon>
           </v-list-item-action>
@@ -24,7 +24,15 @@
             <v-list-item-title>Vagas</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="user == null">
+        <v-list-item :to="'/' + role + '/dashboard'" router exact class="mb-2" v-if="user != null">
+          <v-list-item-action>
+            <v-icon>mdi-desktop-mac-dashboard</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="user == null" class="px-1">
           <v-expansion-panels>
             <v-expansion-panel>
               <v-expansion-panel-header>
@@ -32,7 +40,7 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list>
-                  <v-list-item to="/company/login" router exact class="mb-3.5">
+                  <v-list-item to="/company/login" router exact>
                     <v-list-item-action>
                       <v-icon>mdi-briefcase</v-icon>
                     </v-list-item-action>
@@ -49,7 +57,7 @@
             </v-expansion-panel>
           </v-expansion-panels>
         </v-list-item>
-        <v-list-item  class="mb-2" v-else @click="logout">
+        <v-list-item class="mb-2" v-else @click="logout">
           <v-list-item-action>
             <v-icon>mdi-logout</v-icon>
           </v-list-item-action>
@@ -64,7 +72,7 @@
       fixed
       app
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
       <v-btn
         icon
         @click.stop="miniVariant = !miniVariant"
@@ -72,12 +80,12 @@
       >
         <v-icon>mdi-{{ `chevron-${!miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title" @click="$router.push('/')" class="toolbar-title"/>
-      <v-spacer />
+      <v-toolbar-title v-text="title" @click="$router.push(user != null ? `/${role}/dashboard` : '/')" class="toolbar-title"/>
+      <v-spacer/>
     </v-app-bar>
     <v-main>
       <v-container>
-        <Nuxt />
+        <Nuxt/>
       </v-container>
     </v-main>
     <v-footer app>
@@ -89,22 +97,24 @@
 <script>
 export default {
   name: 'DefaultLayout',
-  data () {
+  data() {
     return {
       user: null,
       clipped: false,
-      drawer: false,
+      drawer: '',
       miniVariant: false,
-      title: 'Ventura Jobs HR'
+      title: 'Ventura Jobs HR',
+      role: ''
     }
   },
   beforeMount() {
     this.miniVariant = JSON.parse(localStorage.getItem('miniVariant'))
+    this.drawer = !this.isMobile()
   },
   methods: {
     setVariant() {
-      if(localStorage.getItem('miniVariant') == null)
-          localStorage.setItem('miniVariant', this.miniVariant)
+      if (localStorage.getItem('miniVariant') == null)
+        localStorage.setItem('miniVariant', this.miniVariant)
       else {
         localStorage.removeItem('miniVariant')
         localStorage.setItem('miniVariant', this.miniVariant)
@@ -113,11 +123,19 @@ export default {
     logout() {
       this.$fire.auth.signOut()
       this.$router.push('/')
+    },
+    isMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
   },
   created() {
-    this.$fire.auth.onAuthStateChanged(user => {
+    this.$fire.auth.onAuthStateChanged(async user => {
       this.user = user != null || user != undefined ? user.uid : null
+      if (user != null) {
+        await user.getIdTokenResult().then(x => {
+          this.role = x.claims.role
+        })
+      }
     })
   }
 }

@@ -2,7 +2,7 @@
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
+      :mini-variant="false"
       :clipped="true"
       fixed
       app
@@ -70,18 +70,15 @@
     <v-app-bar
       :clipped-left="true"
       fixed
-      app
-    >
+      app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-        @click="setVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${!miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" @click="$router.push(user != null ? `/${role}/dashboard` : '/')" class="toolbar-title"/>
+      <v-toolbar-title v-text="title" @click="$router.push(user != null ? `/${role}/dashboard` : '/')"
+                       class="toolbar-title"/>
       <v-spacer/>
+
+      <v-btn @click="toggle">
+        <v-icon>mdi-theme-light-dark</v-icon>
+      </v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -100,25 +97,19 @@ export default {
   data() {
     return {
       user: null,
-      clipped: false,
       drawer: '',
-      miniVariant: false,
       title: 'Ventura Jobs HR',
-      role: ''
+      role: '',
     }
   },
   beforeMount() {
-    this.miniVariant = JSON.parse(localStorage.getItem('miniVariant'))
     this.drawer = !this.isMobile()
+    this.$vuetify.theme.dark = (localStorage.getItem("theme") === 'true')
   },
   methods: {
-    setVariant() {
-      if (localStorage.getItem('miniVariant') == null)
-        localStorage.setItem('miniVariant', this.miniVariant)
-      else {
-        localStorage.removeItem('miniVariant')
-        localStorage.setItem('miniVariant', this.miniVariant)
-      }
+    toggle() {
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      localStorage.setItem("theme", this.$vuetify.theme.dark.toString())
     },
     logout() {
       this.$fire.auth.signOut()
@@ -137,7 +128,7 @@ export default {
         })
       }
     })
-  }
+  },
 }
 </script>
 <style>

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations, mapState} from 'vuex'
+import {mapState} from 'vuex'
 import moment from "moment";
 
 export default {
@@ -40,9 +40,6 @@ export default {
     ...mapState({
       jobs: state => state.jobs.jobs
     }),
-    ...mapGetters({
-      jobs: "jobs/listJobs"
-    })
   },
   beforeMount() {
     this.getJobs()
@@ -82,8 +79,6 @@ export default {
       this.$router.push({query: {page: this.pagination.page, size: this.pagination.size}});
       this.getJobs();
     },
-    ...mapActions(['jobs/getAllJobs']),
-    ...mapMutations(['jobs/GET_ALL_JOBS']),
     getJobs() {
       this.$store.dispatch({type: 'jobs/getAllJobs', size: this.pagination.size, page: this.pagination.page})
     }

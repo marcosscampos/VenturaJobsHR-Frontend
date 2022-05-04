@@ -41,7 +41,9 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/core/plugins/axios',
-    { src: '~/core/plugins/VueEditor', ssr: false }
+    { src: '~/core/plugins/VueEditor', ssr: false },
+    '~/core/plugins/VueMask',
+    '~/core/plugins/VueMoney'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -115,7 +117,7 @@ export default {
     customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: true,
-      light: true,
+      light: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
@@ -127,10 +129,12 @@ export default {
           success: colors.green.accent3
         },
         light: {
-          primary: '#3f51b5',
-          secondary: '#b0bec5',
-          accent: '#8c9eff',
-          error: '#b71c1c',
+          primary: colors.lightBlue,
+          secondary: colors.grey.darken1,
+          accent: colors.pink.darken1,
+          error: colors.red.accent3,
+          background: colors.indigo.lighten5,
+          info: colors.teal.darken1,
         },
       }
     }

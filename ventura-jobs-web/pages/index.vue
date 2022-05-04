@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {mapState} from "vuex";
 import moment from "moment";
 
 export default {
@@ -39,9 +39,6 @@ export default {
   computed: {
     ...mapState({
       jobs: state => state.jobs.jobs
-    }),
-    ...mapGetters({
-      jobs: "jobs/listJobs"
     })
   },
   filters: {
@@ -82,8 +79,6 @@ export default {
     getJobs() {
       this.$store.dispatch({type: 'jobs/getAllJobs', size: 10, page: 1})
     },
-    ...mapActions(['jobs/getAllJobs']),
-    ...mapMutations(['jobs/GET_ALL_JOBS']),
     handleClick(value) {
       this.$router.push({path: `/jobs/${value}`})
     }

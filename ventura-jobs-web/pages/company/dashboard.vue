@@ -11,7 +11,7 @@
           <span>Alterar dados da sua conta</span>
         </NuxtLink>
       </div>
-      <v-dialog max-width="1000">
+      <v-dialog max-width="1300" v-model="jobDialog">
         <template v-slot:activator="{ on, attrs }">
           <div class="mr-2">
             <v-btn v-bind="attrs"
@@ -27,14 +27,14 @@
           <div>
             <v-card-text>
               <v-form @submit.prevent="publishJob">
-                <v-text-field label="Cargo" placeholder="Desenvolvedor Java" v-model="job.Name"></v-text-field>
+                <v-text-field label="Cargo" placeholder="Desenvolvedor Java" v-model="job.name"></v-text-field>
                 <div class="mb-6 mt-4">
                   <h1 class="text-center text-xl font-light m-auto">Salário</h1>
                   <div class="v-input v-text-field v-text-field--is-booted v-text-field--placeholder">
                     <div class="v-input__control">
                       <div class="v-input__slot">
                         <div class="v-text-field__slot">
-                          <money id="input-40" v-model="job.Salary" v-bind="money"></money>
+                          <money id="input-40" v-model="job.salary.value" v-bind="money"></money>
                         </div>
                       </div>
                     </div>
@@ -43,14 +43,19 @@
                 <div class="mt-4">
                   <client-only placeholder="Carregando...">
                     <h1 class="text-center text-xl font-light mb-4 m-auto">Descrição da vaga</h1>
-                    <vue-editor :editor-toolbar="customToolbar" v-model="job.Description"></vue-editor>
+                    <vue-editor :editor-toolbar="customToolbar" v-model="job.description"></vue-editor>
                   </client-only>
                 </div>
-                <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4" v-model="job.Company"></v-text-field>
-                <v-text-field label="Cidade" placeholder="Rio de Janeiro" v-model="job.City"></v-text-field>
-                <v-text-field label="Estado" placeholder="RJ" v-model="job.StateCity"></v-text-field>
+                <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4"
+                              v-model="job.company.name"></v-text-field>
+                <v-text-field label="Cidade" placeholder="Rio de Janeiro" v-model="job.location.city"></v-text-field>
+                <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state"></v-text-field>
+                <v-text-field label="País" placeholder="Brasil" v-model="job.location.country"></v-text-field>
                 <v-select :items="items"
-                          label="Forma de Contratação" v-model="job.FormOfHiring">
+                          item-text="text"
+                          item-value="value"
+                          label="Forma de Contratação"
+                          v-model="job.formOfHiring">
                 </v-select>
                 <v-menu
                   ref="menu"
@@ -71,7 +76,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="job.DeadLine"
+                    v-model="job.finalDate"
                     :active-picker.sync="activePicker"
                     min="1950-01-01"
                     @input="menu = false"
@@ -85,48 +90,80 @@
                 </div>
 
                 <h1 class="text-center text-xl font-light mb-4 m-auto">Critérios</h1>
-
-                <table>
-                  <tbody>
-                  <tr v-for="(item, index) in criteriaList" :key="index" class="inline-flex">
-                    <td class="mr-5">
-                      <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java"
-                                    v-model="item.name"></v-text-field>
-                    </td>
-                    <td class="mr-5">
-                      <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
-                                    v-model="item.description"></v-text-field>
-                    </td>
-                    <td class="mr-5 flex flex-column text-center">
-                      <label for="profiles">Perfil</label>
-                      <select name="profile" id="profiles" class="selectAlignAndWidth">
-                        <option value="1" @click="item.profile = 1">1</option>
-                        <option value="2" @click="item.profile = 2">2</option>
-                        <option value="3" @click="item.profile = 3">3</option>
-                        <option value="4" @click="item.profile = 4">4</option>
-                        <option value="5" @click="item.profile = 5">5</option>
-                      </select>
-                    </td>
-                    <td class="mr-5 flex flex-column text-center">
-                      <label for="weights">Peso</label>
-                      <select name="weight" id="weights" class="selectAlignAndWidth">
-                        <option value="1" @click="item.weight = 1">1</option>
-                        <option value="2" @click="item.weight = 2">2</option>
-                        <option value="3" @click="item.weight = 3">3</option>
-                        <option value="4" @click="item.weight = 4">4</option>
-                        <option value="5" @click="item.weight = 5">5</option>
-                      </select>
-                    </td>
-                    <td>
-                      <v-btn @click="deleteRow" class="closeButton">X</v-btn>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
-                <div class="flex flex-row justify-center">
-                  <v-btn @click.stop="append">Inserir Linhas</v-btn>
-                </div>
-
+                <v-dialog
+                  persistent
+                  v-model="criteriaDialog"
+                  width="500">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="cleanCriteria">
+                      Cadastrar critério
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      <h1 class="text-center text-2xl font-light mb-4 m-auto"> {{ operation }} critério</h1>
+                    </v-card-title>
+                    <div>
+                      <v-card-text>
+                        <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java"
+                                      v-model="criteria.name"></v-text-field>
+                        <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
+                                      v-model="criteria.description"></v-text-field>
+                        <v-select :items="profileList"
+                                  label="Perfil"
+                                  item-text="text"
+                                  item-value="value"
+                                  v-model="criteria.profiletype">
+                        </v-select>
+                        <v-select :items="weightList"
+                                  label="Peso"
+                                  v-model="criteria.weight">
+                        </v-select>
+                        <div class="flex flex-row justify-center">
+                          <div v-if="operation == null || operation === 'Cadastrar'">
+                            <v-btn @click="addCriteriaModal">Cadastrar</v-btn>
+                          </div>
+                          <div v-else>
+                            <v-btn @click="saveCriteriaModal($data)">Salvar</v-btn>
+                          </div>
+                          <v-btn @click="criteriaDialog = false" class="ml-5">Fechar</v-btn>
+                        </div>
+                      </v-card-text>
+                    </div>
+                  </v-card>
+                </v-dialog>
+                <v-simple-table>
+                  <template v-slot:default>
+                    <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Descrição</th>
+                      <th>Perfil</th>
+                      <th>Peso</th>
+                      <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(item, index) in job.criteriaList" :key="item.id">
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.description }}</td>
+                      <td>{{ returnProfileType(item.profiletype) }}</td>
+                      <td>{{ item.weight }}</td>
+                      <td>
+                        <v-btn @click="editCriteria(item, index)">
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                        <v-btn @click="removeCriteria(index)">
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>
                 <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
                   <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
                   <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
@@ -146,7 +183,7 @@
 <script>
 import {Money} from 'v-money'
 import check from "@/components/check";
-import { mapState, mapMutations } from "vuex";
+import {mapState, mapMutations} from "vuex";
 
 export default {
   name: "dashboard",
@@ -159,7 +196,7 @@ export default {
   },
   computed: {
     computedDateFormatted() {
-      return this.formatDate(this.job.DeadLine)
+      return this.formatDate(this.job.finalDate)
     },
     ...mapState({
       erro: state => state.jobs.erro
@@ -167,9 +204,25 @@ export default {
   },
   data() {
     return {
-      salary: 0,
-      items: ['CLT', 'PJ', 'Autônomo'],
-      criteriaList: [],
+      operation: null,
+      jobDialog: false,
+      criteriaDialog: false,
+      items: [{text: 'CLT', value: 1}, {text: 'PJ', value: 2}, {text: 'Autônomo', value: 3}],
+      profileList: [
+        {text: 'Desejável', value: 1},
+        {text: 'Diferencial', value: 2},
+        {text: 'Relevante', value: 3},
+        {text: 'Muito Relevante', value: 4},
+        {text: 'Obrigatório', value: 5}
+      ],
+      weightList: [1, 2, 3, 4, 5],
+      criteria: {
+        id: 0,
+        name: '',
+        description: '',
+        profiletype: 1,
+        weight: 1
+      },
       customToolbar: [
         [{'header': [1, 2, 3, 4, 5, 6, false]}],
         ["bold"], ["italic"], ["underline"], ["link"],
@@ -186,17 +239,25 @@ export default {
         masked: false
       },
       job: {
-        Name: '',
-        Salary: 0,
-        Description: '',
-        Company: '',
-        City: '',
-        StateCity: '',
-        DeadLine: null,
-        FormOfHiring: '',
-        Criteria: []
+        name: '',
+        salary: {
+          value: 0
+        },
+        description: '',
+        company: {
+          name: '',
+          id: '',
+          uid: ''
+        },
+        location: {
+          city: '',
+          state: '',
+          country: ''
+        },
+        criteriaList: [],
+        finalDate: null,
+        formOfHiring: '',
       },
-      jobs: [],
       darkClass: 'link-tab',
       lightClass: 'link-tab-light',
       activeDarkClass: 'link-tab-active',
@@ -210,40 +271,104 @@ export default {
   },
   mounted() {
     this.unsub = this.$store.subscribe((mutation, state) => {
-      if(mutation.type == 'jobs/CREATE_JOB') {
-        check.hasError(this.erro, result => {
-          if(!result) {
-            console.log('foi')
+      if (mutation.type == 'jobs/CREATE_JOB') {
+        check.hasErrorNotifications(this.erro, result => {
+          if (!result) {
+            this.jobDialog = false;
+            this.job = {
+              name: '',
+                salary: {
+                value: 0
+              },
+              description: '',
+                company: {
+                name: '',
+                  id: '',
+                  uid: ''
+              },
+              location: {
+                city: '',
+                  state: '',
+                  country: ''
+              },
+              criteriaList: [],
+                finalDate: null,
+                formOfHiring: '',
+            }
           }
         })
       }
     })
   },
   methods: {
-    publishJob() {
-      this.criteriaList.forEach(x => {
-        this.job.Criteria.push(x)
-      })
-      this.jobs.push(this.job)
+    returnProfileType(profile) {
+      switch(profile) {
+        case 1:
+          return "Desejável"
+        case 2:
+          return "Diferencial"
+        case 3:
+          return "Relevante"
+        case 4:
+          return "Muito Relevante"
+        case 5:
+          return "Obrigatório"
+      }
+    },
+    cleanCriteria() {
+      this.operation = "Cadastrar"
+      this.criteria.name = ''
+      this.criteria.description = ''
+      this.criteria.profiletype = 1
+      this.criteria.weight = 1
+    },
+    removeCriteria(index) {
+      this.job.criteriaList.splice(index, 1);
+    },
+    editCriteria(value, index) {
+      this.operation = "Editar"
+      this.criteria = value
+      this.criteria.id = index
+      this.criteriaDialog = true;
+    },
+    saveCriteriaModal(data) {
+      let index = data.criteria.id
 
-      this.$store.dispatch({ type: 'jobs/createJob', Job: this.jobs })
+      this.job.criteriaList.splice(index,1, {
+        name: this.criteria.name,
+        description: this.criteria.description,
+        profiletype: this.criteria.profiletype,
+        weight: this.criteria.weight
+      })
+
+      this.criteriaDialog = false;
+    },
+    addCriteriaModal() {
+      this.job.criteriaList.push({
+        name: this.criteria.name,
+        description: this.criteria.description,
+        profiletype: this.criteria.profiletype,
+        weight: this.criteria.weight
+      })
+
+      this.criteria.name = ''
+      this.criteria.description = ''
+      this.criteria.profiletype = 1
+      this.criteria.weight = 1
+      this.criteriaDialog = false
+    },
+    publishJob() {
+      this.job.company.uid = this.$fire.auth.currentUser.uid
+      this.job.company.name = "Ventura Jobs HR"
+
+      let jobList = {jobList: [this.job]}
+      this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
     },
     formatDate(date) {
       if (!date) return null
 
       const [year, month, day] = date.split('-')
       return `${month}/${day}/${year}`
-    },
-    append() {
-      this.criteriaList.push({
-        weight: 0,
-        profile: 0,
-        description: '',
-        name: ''
-      })
-    },
-    deleteRow(index) {
-      this.criteriaList.splice(index, 1);
     },
     ...mapMutations(['jobs/CREATE_JOB'])
   }

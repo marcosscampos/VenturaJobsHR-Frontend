@@ -1,15 +1,15 @@
 <template>
   <v-container>
-    <v-skeleton-loader v-if="loading" :loading="loading" type="card" max-width="560" max-height="250"></v-skeleton-loader>
-    <div class="grid grid-cols-2 gap-4">
-      <v-card v-for="job in jobs.Data" :key="job.Id" min-height="170" max-height="250"
-              class="card card__utils" :to="`jobs/${job.Id}`" v-if="!loading">
-        <v-card-title class="break-words">{{ job.Name }}</v-card-title>
-        <v-card-text>{{ job.Description }}</v-card-text>
+    <v-skeleton-loader v-if="loading" :loading="loading" type="card"></v-skeleton-loader>
+    <div class="flex flex-column">
+      <v-card v-for="job in jobs.data" :key="job.id"
+              class="card card__utils" :to="`jobs/${job.id}`" v-if="!loading">
+        <v-card-title class="break-words">{{ job.name }}</v-card-title>
+        <v-card-text v-html="job.description"></v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-icon icon style="font-size: 21px !important; margin-right: 5px !important;">mdi-calendar-clock</v-icon>
-          {{ job.FinalDate | moment}}
+          {{ job.finalDate | moment}}
           </v-card-actions>
       </v-card>
     </div>
@@ -70,7 +70,7 @@ export default {
     this.unsub = this.$store.subscribe((mutation, state) => {
       if(mutation.type == 'jobs/GET_ALL_JOBS') {
         this.loading = false;
-        this.total = (Math.ceil(this.jobs.Total / this.jobs.PageSize))
+        this.total = (Math.ceil(this.jobs.total / this.jobs.pageSize))
       }
     })
   },

@@ -41,6 +41,43 @@ const checar = {
       callback(false);
     }
   },
+  hasErrorNotifications(erro, callback) {
+    if (erro != null) {
+      var mensagem = "";
+      if (erro.errors != null) {
+        for(const [key, value] of Object.entries(erro.errors)) {
+          for (const [entryKey, entryValue] of Object.entries(value)) {
+            for(var item of entryValue) {
+              if (mensagem != "") {
+                mensagem = mensagem + "<br/>";
+              }
+              mensagem = mensagem + item.message;
+            }
+          }
+        }
+      }
+      else {
+          mensagem = "Erro desconhecido."
+      }
+      // eslint-disable-next-line
+      Swal.fire({
+        icon: 'error',
+        title: "Falha ao validar os parâmetros!",
+        html: mensagem
+      });
+      callback(true);
+    } else {
+      // eslint-disable-next-line
+      Swal.fire({
+        title: 'Sucesso!',
+        text: 'Operação realizada com sucesso!',
+        icon: 'success',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      callback(false);
+    }
+  },
   hasErrorWithoutSuccessMessage(erro, callback) {
     if (erro != null) {
       var mensagem = "";

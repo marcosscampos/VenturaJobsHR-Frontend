@@ -162,7 +162,7 @@
 }
 
 .w-96 {
-  width: 22.5rem;
+  width: 28.5rem;
 }
 
 .closeButton {
@@ -170,9 +170,4 @@
   text-align: center;
   background-color: red !important;
   min-width: 0 !important;
-}
-
-.selectAlignAndWidth {
-  width: 50px;
-  text-align: center
 }

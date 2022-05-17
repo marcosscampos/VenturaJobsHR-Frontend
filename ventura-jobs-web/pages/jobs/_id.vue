@@ -1,5 +1,5 @@
 <template>
-    <div class="container container__colors">
+    <div class="container">
       <div class="flex">
         <div class="flex-none w-14">
           <Nuxt-Link to="/jobs" class="arrow__utils">
@@ -9,20 +9,20 @@
           </Nuxt-Link>
         </div>
         <div class="flex-initial m-auto">
-          <h1 class="text-2xl font-medium">{{ job.Data.Name }}</h1>
+          <h1 class="text-2xl font-medium">{{ job.data.name }}</h1>
           <h5 class="text-base font-normal">Descrição da vaga</h5>
-          <p class="font-light">{{ job.Data.Description }}</p>
+          <p class="font-light" v-html="job.data.description"></p>
           <div class="flex">
             <p class="font-bold">Salário:</p>
             <p class="font-light ml-2">
-              R$ {{ formatPrice(job.Data.Salary.Value) }}
+              R$ {{ formatPrice(job.data.salary.value) }}
             </p>
           </div>
           <p>
             <v-icon icon style="font-size: 21px !important">
               mdi-calendar-clock
             </v-icon>
-            Esta vaga irá se encerrar {{ job.Data.FinalDate | moment }}
+            Esta vaga irá se encerrar {{ job.data.finalDate | moment }}
           </p>
           <v-btn>Candidatar-se</v-btn>
         </div>
@@ -37,7 +37,7 @@ export default {
   name: "job",
   head() {
     return {
-      title: `Vaga: ${this.job.Data.Name}`,
+      title: `Vaga: ${this.job.data.name}`,
     };
   },
   middleware: 'auth-jobs',

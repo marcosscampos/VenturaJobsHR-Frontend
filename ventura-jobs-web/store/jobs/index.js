@@ -10,8 +10,8 @@ const getters = {}
 
 const actions = {
   async getAllJobs({commit}, payload) {
-    this.$httpClient.$get(`/v1/jobs/criteria?Page=${payload.page}&Size=${payload.size}`).then(response => {
-      commit(Mutation.GET_ALL_JOBS, response.Data)
+    this.$httpClient.$get(`/v1/jobs?page=${payload.page}&size=${payload.size}`).then(response => {
+      commit(Mutation.GET_ALL_JOBS, response.data)
     }, (reason) => {
       commit(Mutation.GET_ALL_JOBS, reason)
     })
@@ -19,13 +19,9 @@ const actions = {
 
   async createJob({commit}, payload) {
     return new Promise((resolve, reject) => {
-      this.$httpClient.$post('/v1/jobs', payload.Job).then(response => {
-        if(response.data.status == 400) {
-          reject(response.data)
-        } else {
-          resolve(response.data)
-          commit(Mutation.CREATE_JOB, response.data)
-        }
+      this.$httpClient.$post('/v1/jobs', payload.jobList).then(job => {
+          resolve(job.success)
+          commit(Mutation.CREATE_JOB, job.success)
       }).catch(error => {
         reject(error.response.data)
         commit(Mutation.CREATE_JOB, error.response.data)

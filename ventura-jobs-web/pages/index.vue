@@ -13,12 +13,12 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="item in jobs.Data" :key="item.Id">
-            <td>{{ item.Name }}</td>
-            <td>{{ item.Description }}</td>
-            <td>?</td>
+          <tr v-for="item in jobs.data" :key="item.id">
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.location.city }}</td>
             <td>
-              <v-btn @click="handleClick(item.Id)">
+              <v-btn @click="handleClick(item.id)">
                 <v-icon>mdi-eye</v-icon>
               </v-btn>
             </td>
@@ -58,9 +58,10 @@ export default {
   data() {
     return {
       headers: [
-        {text: 'Cargo', value: 'Name'},
-        {text: 'Descrição', value: 'Description'},
-        {text: 'Data Final', value: 'FinalDate'},
+        {text: 'Cargo', value: 'name'},
+        {text: 'Descrição', value: 'description'},
+        {text: 'Data Final', value: 'finalDate'},
+        {text: 'Cidade', value: 'city'}
       ],
       loading: true
     }

@@ -67,6 +67,7 @@ export default {
     }
   },
   mounted() {
+    console.log(this.jobs)
     this.unsub = this.$store.subscribe((mutation, state) => {
       if(mutation.type == 'jobs/GET_ALL_JOBS') {
         this.loading = false;

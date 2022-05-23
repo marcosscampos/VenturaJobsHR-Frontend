@@ -10,8 +10,8 @@ const getters = {}
 
 const actions = {
   async getAllJobs({commit}, payload) {
-    this.$httpClient.$get(`/v1/jobs?page=${payload.page}&size=${payload.size}`).then(response => {
-      commit(Mutation.GET_ALL_JOBS, response.data)
+    this.$httpClient.$get(`v1/jobs?page=${payload.page}&size=${payload.size}`).then(response => {
+      commit(Mutation.GET_ALL_JOBS, response.content.data)
     }, (reason) => {
       commit(Mutation.GET_ALL_JOBS, reason)
     })

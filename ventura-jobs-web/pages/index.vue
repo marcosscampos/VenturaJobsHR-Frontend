@@ -15,7 +15,7 @@
           <tbody>
           <tr v-for="item in jobs.data" :key="item.id">
             <td>{{ item.name }}</td>
-            <td>{{ item.description }}</td>
+            <td v-html="item.description.slice(0, 50)"></td>
             <td>{{ item.location.city }}</td>
             <td>
               <v-btn @click="handleClick(item.id)">
@@ -72,6 +72,7 @@ export default {
   mounted() {
     this.unsub = this.$store.subscribe((mutation, state) => {
       if (mutation.type == 'jobs/GET_ALL_JOBS') {
+        console.log(this.jobs)
         this.loading = false;
       }
     })

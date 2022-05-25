@@ -4,7 +4,6 @@
       <v-card class="p-5">
         <h1 class="text-center text-2xl font-light mb-4">Cadastre-se!</h1>
         <v-form @submit.prevent="submit" class="ma-auto">
-          <v-text-field v-model="company.name" label="Digite seu nome" placeholder="John Doe"></v-text-field>
           <v-text-field v-model="company.email" label="Digite seu melhor email" placeholder="test@test.com"></v-text-field>
           <v-text-field v-model="company.password" label="Digite sua senha" :type="show ? 'text' : 'password'"
                         :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show = !show"></v-text-field>
@@ -38,7 +37,6 @@ export default {
     return {
       show: false,
       company: {
-        name: '',
         email: '',
         password: '',
         role: 'company'

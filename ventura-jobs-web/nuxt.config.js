@@ -85,6 +85,9 @@ export default {
     '@nuxtjs/auth-next'
   ],
 
+  router: {
+    middleware: ['auth-register']
+  },
 
   // auth: {
   //   strategies: {
@@ -116,8 +119,8 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
-      light: false,
+      dark: false,
+      light: true,
       themes: {
         dark: {
           primary: colors.blue.darken2,

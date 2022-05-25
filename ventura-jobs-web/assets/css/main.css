@@ -171,3 +171,8 @@
   background-color: red !important;
   min-width: 0 !important;
 }
+
+.mask-input {
+  outline: none;
+  border-bottom: 1px solid;
+}

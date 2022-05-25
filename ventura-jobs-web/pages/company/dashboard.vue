@@ -187,7 +187,7 @@ import {mapState, mapMutations} from "vuex";
 
 export default {
   name: "dashboard",
-  middleware: 'auth-company',
+  middleware: ['auth-company'],
   components: {Money},
   head() {
     return {

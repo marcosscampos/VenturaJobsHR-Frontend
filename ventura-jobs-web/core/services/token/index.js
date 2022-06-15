@@ -1,13 +1,22 @@
 const tokenKey = "@ventura/token"
 
 export function saveToken(token) {
-  process.client ? localStorage.setItem(tokenKey, token) : window.localStorage.setItem(tokenKey, token);
+  if (process.server)
+    return;
+
+  localStorage.setItem(tokenKey, token)
 }
 
-// export function getToken() {
-//   return process.client ? localStorage.getItem(tokenKey) : window.localStorage.getItem(tokenKey);
-// }
+export function getToken() {
+  if (process.server)
+    return;
+
+  return localStorage.getItem(tokenKey)
+}
 
 export function deleteToken() {
-  return process.client ? localStorage.removeItem(tokenKey) : window.localStorage.removeItem(tokenKey);
+  if (process.server)
+    return;
+
+  localStorage.removeItem(tokenKey)
 }

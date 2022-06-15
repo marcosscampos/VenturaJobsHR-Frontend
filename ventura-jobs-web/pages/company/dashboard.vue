@@ -1,24 +1,21 @@
 <template>
   <v-container>
-    <div class="flex flex-row align-center justify-evenly">
-      <div class="mr-2">
-        <NuxtLink to="/company/publishJobs" :class="$vuetify.theme.dark ? darkClass : lightClass">
-          <span>Vagas publicadas</span>
-        </NuxtLink>
-      </div>
-      <div class="mr-2">
-        <NuxtLink to="/company/account" :class="$vuetify.theme.dark ? darkClass : lightClass">
-          <span>Alterar dados da sua conta</span>
-        </NuxtLink>
-      </div>
-      <v-dialog max-width="1300" v-model="jobDialog">
+    <div class="grid gap-4 grid-rows-3">
+      <v-btn to="/company/publishedJobs"
+             :class="$vuetify.theme.dark ? darkClass : lightClass"
+             style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
+        <span style="word-break: break-word">Vagas publicadas</span>
+      </v-btn>
+      <v-btn to="/company/account"
+             :class="$vuetify.theme.dark ? darkClass : lightClass"
+             style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
+        <span style="word-break: break-word">Alterar dados da sua conta</span>
+      </v-btn>
+      <v-dialog max-width="100%" v-model="jobDialog">
         <template v-slot:activator="{ on, attrs }">
-          <div class="mr-2">
-            <v-btn v-bind="attrs"
-                   v-on="on" style="height: 59px; text-transform: none; font-size: 16px">
-              <span>Publicar nova vaga</span>
-            </v-btn>
-          </div>
+          <v-btn v-bind="attrs" v-on="on" style="height: 59px; text-transform: none; font-size: 16px;">
+            <span style="word-break: break-word">Publicar nova vaga</span>
+          </v-btn>
         </template>
         <v-card>
           <v-card-title>
@@ -46,42 +43,25 @@
                     <vue-editor :editor-toolbar="customToolbar" v-model="job.description"></vue-editor>
                   </client-only>
                 </div>
-                <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4"
-                              v-model="job.company.name"></v-text-field>
+                <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4" v-model="job.company.name">
+                </v-text-field>
                 <v-text-field label="Cidade" placeholder="Rio de Janeiro" v-model="job.location.city"></v-text-field>
                 <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state"></v-text-field>
                 <v-text-field label="País" placeholder="Brasil" v-model="job.location.country"></v-text-field>
-                <v-select :items="items"
-                          item-text="text"
-                          item-value="value"
-                          label="Forma de Contratação"
+                <v-select :items="items" item-text="text" item-value="value" label="Forma de Contratação"
                           v-model="job.formOfHiring">
                 </v-select>
-                <v-menu
-                  ref="menu"
-                  v-model="menu"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
+                <v-select :items="occupationAreaList" item-text="text" item-value="value" label="Área de ocupação"
+                          v-model="job.occupationArea">
+                </v-select>
+                <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
+                        min-width="auto">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="computedDateFormatted"
-                      label="Data Limite"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                    <v-text-field v-model="computedDateFormatted" label="Data Limite" prepend-icon="mdi-calendar"
+                                  readonly v-bind="attrs" v-on="on"></v-text-field>
                   </template>
-                  <v-date-picker
-                    v-model="job.finalDate"
-                    :active-picker.sync="activePicker"
-                    min="1950-01-01"
-                    @input="menu = false"
-                    locale="pt-br"
-                  ></v-date-picker>
+                  <v-date-picker v-model="job.deadLine" :active-picker.sync="activePicker" min="1950-01-01"
+                                 @input="menu = false" locale="pt-br"></v-date-picker>
                 </v-menu>
 
                 <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
@@ -90,15 +70,9 @@
                 </div>
 
                 <h1 class="text-center text-xl font-light mb-4 m-auto">Critérios</h1>
-                <v-dialog
-                  persistent
-                  v-model="criteriaDialog"
-                  width="500">
+                <v-dialog persistent v-model="criteriaDialog" width="500">
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-bind="attrs"
-                      v-on="on"
-                      @click="cleanCriteria">
+                    <v-btn v-bind="attrs" v-on="on" @click="cleanCriteria">
                       Cadastrar critério
                     </v-btn>
                   </template>
@@ -108,19 +82,14 @@
                     </v-card-title>
                     <div>
                       <v-card-text>
-                        <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java"
-                                      v-model="criteria.name"></v-text-field>
+                        <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java" v-model="criteria.name">
+                        </v-text-field>
                         <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
                                       v-model="criteria.description"></v-text-field>
-                        <v-select :items="profileList"
-                                  label="Perfil"
-                                  item-text="text"
-                                  item-value="value"
+                        <v-select :items="profileList" label="Perfil" item-text="text" item-value="value"
                                   v-model="criteria.profiletype">
                         </v-select>
-                        <v-select :items="weightList"
-                                  label="Peso"
-                                  v-model="criteria.weight">
+                        <v-select :items="weightList" label="Peso" v-model="criteria.weight">
                         </v-select>
                         <div class="flex flex-row justify-center">
                           <div v-if="operation == null || operation === 'Cadastrar'">
@@ -196,7 +165,7 @@ export default {
   },
   computed: {
     computedDateFormatted() {
-      return this.formatDate(this.job.finalDate)
+      return this.formatDate(this.job.deadLine)
     },
     ...mapState({
       erro: state => state.jobs.erro
@@ -207,7 +176,20 @@ export default {
       operation: null,
       jobDialog: false,
       criteriaDialog: false,
-      items: [{text: 'CLT', value: 1}, {text: 'PJ', value: 2}, {text: 'Autônomo', value: 3}],
+      items: [
+        {text: 'CLT', value: 1},
+        {text: 'PJ', value: 2},
+        {text: 'Autônomo', value: 3},
+        {text: 'Estágio', value: 4}
+      ],
+      occupationAreaList: [
+        {text: 'Gestão', value: 1},
+        {text: 'Infraestrutura', value: 2},
+        {text: 'Desenvolvimento', value: 3},
+        {text: 'Banco de Dados', value: 4},
+        {text: 'Segurança', value: 5},
+        {text: 'Design', value: 6},
+      ],
       profileList: [
         {text: 'Desejável', value: 1},
         {text: 'Diferencial', value: 2},
@@ -255,8 +237,9 @@ export default {
           country: ''
         },
         criteriaList: [],
-        finalDate: null,
+        deadLine: null,
         formOfHiring: '',
+        occupationArea: ''
       },
       darkClass: 'link-tab',
       lightClass: 'link-tab-light',
@@ -272,28 +255,29 @@ export default {
   mounted() {
     this.unsub = this.$store.subscribe((mutation, state) => {
       if (mutation.type == 'jobs/CREATE_JOB') {
-        check.hasErrorNotifications(this.erro, result => {
+        check.hasError(this.erro, result => {
           if (!result) {
             this.jobDialog = false;
             this.job = {
               name: '',
-                salary: {
+              salary: {
                 value: 0
               },
               description: '',
-                company: {
+              company: {
                 name: '',
-                  id: '',
-                  uid: ''
+                id: '',
+                uid: ''
               },
               location: {
                 city: '',
-                  state: '',
-                  country: ''
+                state: '',
+                country: ''
               },
               criteriaList: [],
-                finalDate: null,
-                formOfHiring: '',
+              deadLine: null,
+              formOfHiring: '',
+              occupationArea: ''
             }
           }
         })
@@ -302,7 +286,7 @@ export default {
   },
   methods: {
     returnProfileType(profile) {
-      switch(profile) {
+      switch (profile) {
         case 1:
           return "Desejável"
         case 2:
@@ -334,7 +318,7 @@ export default {
     saveCriteriaModal(data) {
       let index = data.criteria.id
 
-      this.job.criteriaList.splice(index,1, {
+      this.job.criteriaList.splice(index, 1, {
         name: this.criteria.name,
         description: this.criteria.description,
         profiletype: this.criteria.profiletype,
@@ -359,7 +343,6 @@ export default {
     },
     publishJob() {
       this.job.company.uid = this.$fire.auth.currentUser.uid
-      this.job.company.name = "Ventura Jobs HR"
 
       let jobList = {jobList: [this.job]}
       this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
@@ -368,7 +351,7 @@ export default {
       if (!date) return null
 
       const [year, month, day] = date.split('-')
-      return `${month}/${day}/${year}`
+      return `${day}/${month}/${year}`
     },
     ...mapMutations(['jobs/CREATE_JOB'])
   }

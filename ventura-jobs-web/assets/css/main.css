@@ -176,3 +176,15 @@
   outline: none;
   border-bottom: 1px solid;
 }
+
+.card__utils:hover {
+  text-decoration: none !important;
+  transform: scale(1.03, 1.03);
+  transition: 1s all;
+}
+
+.card__utils {
+  transition: 1s all;
+  cursor: pointer;
+  margin-bottom: 10px;
+}

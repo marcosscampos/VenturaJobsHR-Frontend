@@ -1,4 +1,11 @@
-export default function({ $axios, redirect, app }, inject) {
+import {getToken, saveToken} from "@/core/services/token";
+
+export default async ({ $axios, redirect, app }, inject) => {
+  app.$fire.auth.onAuthStateChanged(async user => {
+    if(user != null) {
+      saveToken((await user.getIdTokenResult()).token)
+    }
+  })
   const httpClient = $axios.create({
     baseURL: process.env.NUXT_ENV_API_URL,
     headers: {
@@ -6,7 +13,8 @@ export default function({ $axios, redirect, app }, inject) {
         'Access-Control-Allow-Origin': 'https://ventura-jobs.herokuapp.com, http://localhost:3000',
         'Access-Control-Allow-Headers': 'Origin, X-Requested-With',
         'Content-Type': 'application/json',
-        'Accept': 'application/json, text/plain, */*'
+        'Accept': 'application/json, text/plain, */*',
+        'Authorization': 'Bearer ' + getToken()
       }
     },
     credentials: false

@@ -9,7 +9,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-icon icon style="font-size: 21px !important; margin-right: 5px !important;">mdi-calendar-clock</v-icon>
-          {{ job.finalDate | moment}}
+          {{ job.deadLine | moment}}
           </v-card-actions>
       </v-card>
     </div>
@@ -67,7 +67,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.jobs)
     this.unsub = this.$store.subscribe((mutation, state) => {
       if(mutation.type == 'jobs/GET_ALL_JOBS') {
         this.loading = false;
@@ -93,15 +92,5 @@ export default {
 }
 </script>
 <style>
-.card__utils:hover {
-  text-decoration: none !important;
-  transform: scale(1.03, 1.03);
-  transition: 1s all;
-}
 
-.card__utils {
-  transition: 1s all;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
 </style>

@@ -25,7 +25,7 @@ const checar = {
       // eslint-disable-next-line
       Swal.fire({
         icon: 'error',
-        title: erro.message,
+        title: "Falha ao validar os parâmetros!",
         html: mensagem
       });
       callback(true);

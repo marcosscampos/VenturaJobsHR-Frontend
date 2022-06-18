@@ -3,7 +3,11 @@ import {getToken, saveToken} from "@/core/services/token";
 export default async ({ $axios, redirect, app }, inject) => {
   app.$fire.auth.onAuthStateChanged(async user => {
     if(user != null) {
-      saveToken((await user.getIdTokenResult()).token)
+      await user.getIdToken(true).then(token => {
+        saveToken(token)
+      }).catch(error => {
+        console.log(error)
+      })
     }
   })
   const httpClient = $axios.create({

@@ -43,7 +43,8 @@ export default {
     '~/core/plugins/axios',
     { src: '~/core/plugins/VueEditor', ssr: false },
     '~/core/plugins/VueMask',
-    '~/core/plugins/VueMoney'
+    '~/core/plugins/VueMoney',
+    { src: '~/core/plugins/amCharts.js', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -145,6 +146,10 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: [
+      "vee-validate/dist/rules"
+    ],
+    extend(config, ctx) {},
     postcss: {
       plugins: {
         tailwindcss: {},

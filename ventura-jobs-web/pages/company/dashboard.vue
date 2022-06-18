@@ -23,124 +23,175 @@
           </v-card-title>
           <div>
             <v-card-text>
-              <v-form @submit.prevent="publishJob">
-                <v-text-field label="Cargo" placeholder="Desenvolvedor Java" v-model="job.name"></v-text-field>
-                <div class="mb-6 mt-4">
-                  <h1 class="text-center text-xl font-light m-auto">Salário</h1>
-                  <div class="v-input v-text-field v-text-field--is-booted v-text-field--placeholder">
-                    <div class="v-input__control">
-                      <div class="v-input__slot">
-                        <div class="v-text-field__slot">
-                          <money id="input-40" v-model="job.salary.value" v-bind="money"></money>
+              <ValidationObserver v-slot="{invalid}" ref="observer">
+                <v-form @submit.prevent="publishJob">
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Cargo">
+                    <v-text-field label="Cargo" placeholder="Desenvolvedor Java" v-model="job.name"
+                                  :error-messages="errors"></v-text-field>
+                  </ValidationProvider>
+                  <div class="mb-6 mt-4">
+                    <h1 class="text-center text-xl font-light m-auto">Salário</h1>
+                    <div class="v-input v-text-field v-text-field--is-booted v-text-field--placeholder">
+                      <div class="v-input__control">
+                        <div class="v-input__slot">
+                          <div class="v-text-field__slot">
+                            <money id="input-40" v-model="job.salary.value" v-bind="money"></money>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="mt-4">
-                  <client-only placeholder="Carregando...">
-                    <h1 class="text-center text-xl font-light mb-4 m-auto">Descrição da vaga</h1>
-                    <vue-editor :editor-toolbar="customToolbar" v-model="job.description"></vue-editor>
-                  </client-only>
-                </div>
-                <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4" v-model="job.company.name">
-                </v-text-field>
-                <v-text-field label="Cidade" placeholder="Rio de Janeiro" v-model="job.location.city"></v-text-field>
-                <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state"></v-text-field>
-                <v-text-field label="País" placeholder="Brasil" v-model="job.location.country"></v-text-field>
-                <v-select :items="items" item-text="text" item-value="value" label="Forma de Contratação"
-                          v-model="job.formOfHiring">
-                </v-select>
-                <v-select :items="occupationAreaList" item-text="text" item-value="value" label="Área de ocupação"
-                          v-model="job.occupationArea">
-                </v-select>
-                <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
-                        min-width="auto">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="computedDateFormatted" label="Data Limite" prepend-icon="mdi-calendar"
-                                  readonly v-bind="attrs" v-on="on"></v-text-field>
-                  </template>
-                  <v-date-picker v-model="job.deadLine" :active-picker.sync="activePicker" min="1950-01-01"
-                                 @input="menu = false" locale="pt-br"></v-date-picker>
-                </v-menu>
+                  <div class="mt-4">
+                    <client-only placeholder="Carregando...">
+                      <ValidationProvider v-slot="{ errors }" rules="required" name="Descrição">
+                        <h1 class="text-center text-xl font-light mb-4 m-auto">Descrição da vaga</h1>
+                        <vue-editor :editor-toolbar="customToolbar" v-model="job.description"></vue-editor>
+                        <span style="color: #ff1744; font-size: 12px; margin-top: 10px">{{ errors[0] }}</span>
+                      </ValidationProvider>
+                    </client-only>
+                  </div>
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Empresa">
+                    <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4"
+                                  v-model="job.company.name" :error-messages="errors"></v-text-field>
+                  </ValidationProvider>
 
-                <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
-                  <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                  <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                </div>
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Cidade">
+                    <v-text-field label="Cidade" placeholder="Rio de Janeiro"
+                                  v-model="job.location.city" :error-messages="errors"></v-text-field>
+                  </ValidationProvider>
 
-                <h1 class="text-center text-xl font-light mb-4 m-auto">Critérios</h1>
-                <v-dialog persistent v-model="criteriaDialog" width="500">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on" @click="cleanCriteria">
-                      Cadastrar critério
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title>
-                      <h1 class="text-center text-2xl font-light mb-4 m-auto"> {{ operation }} critério</h1>
-                    </v-card-title>
-                    <div>
-                      <v-card-text>
-                        <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java" v-model="criteria.name">
-                        </v-text-field>
-                        <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
-                                      v-model="criteria.description"></v-text-field>
-                        <v-select :items="profileList" label="Perfil" item-text="text" item-value="value"
-                                  v-model="criteria.profiletype">
-                        </v-select>
-                        <v-select :items="weightList" label="Peso" v-model="criteria.weight">
-                        </v-select>
-                        <div class="flex flex-row justify-center">
-                          <div v-if="operation == null || operation === 'Cadastrar'">
-                            <v-btn @click="addCriteriaModal">Cadastrar</v-btn>
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Estado">
+                    <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state"
+                                  :error-messages="errors"></v-text-field>
+                  </ValidationProvider>
+
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="País">
+                    <v-text-field label="País" placeholder="Brasil" v-model="job.location.country"
+                                  :error-messages="errors"></v-text-field>
+                  </ValidationProvider>
+
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Forma de Contratação">
+                    <v-select :items="items" item-text="text"
+                              item-value="value"
+                              :error-messages="errors"
+                              label="Forma de Contratação"
+                              v-model="job.formOfHiring">
+                    </v-select>
+                  </ValidationProvider>
+
+                  <ValidationProvider v-slot="{ errors }" rules="required" name="Área de Ocupação">
+                    <v-select :items="occupationAreaList"
+                              item-text="text"
+                              item-value="value"
+                              label="Área de ocupação"
+                              v-model="job.occupationArea" :error-messages="errors">
+                    </v-select>
+                  </ValidationProvider>
+                  <v-menu ref="menu" v-model="menu"
+                          :close-on-content-click="false"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="auto">
+                    <template v-slot:activator="{ on, attrs }">
+                      <ValidationProvider v-slot="{ errors }" rules="required" name="Data Limite">
+                        <v-text-field v-model="computedDateFormatted"
+                                      label="Data Limite"
+                                      :rules="errors"
+                                      prepend-icon="mdi-calendar"
+                                      readonly v-bind="attrs" v-on="on"></v-text-field>
+                      </ValidationProvider>
+                    </template>
+                    <v-date-picker v-model="job.deadLine"
+                                   :active-picker.sync="activePicker"
+                                   min="1950-01-01"
+                                   @input="menu = false" locale="pt-br"></v-date-picker>
+                  </v-menu>
+                  <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                  </div>
+
+                  <h1 class="text-center text-xl font-light mb-4 m-auto">Critérios</h1>
+                  <v-dialog persistent v-model="criteriaDialog" width="500">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn v-bind="attrs" v-on="on" @click="cleanCriteria">
+                        Cadastrar critério
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title>
+                        <h1 class="text-center text-2xl font-light mb-4 m-auto"> {{ operation }} critério</h1>
+                      </v-card-title>
+                      <div>
+                        <v-card-text>
+                          <div v-if="criteriaErrors.length">
+                            <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
+                            <ul>
+                              <li v-for="error in criteriaErrors"
+                                  style="color: #ff1744;">{{ error }}</li>
+                            </ul>
                           </div>
-                          <div v-else>
-                            <v-btn @click="saveCriteriaModal($data)">Salvar</v-btn>
+                          <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java"
+                                        v-model="criteria.name">
+                          </v-text-field>
+                          <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
+                                        v-model="criteria.description"></v-text-field>
+                          <v-select :items="profileList" label="Perfil" item-text="text" item-value="value"
+                                    v-model="criteria.profiletype">
+                          </v-select>
+                          <v-select :items="weightList" label="Peso" v-model="criteria.weight">
+                          </v-select>
+                          <div class="flex flex-row justify-center">
+                            <div v-if="operation == null || operation === 'Cadastrar'">
+                              <v-btn @click="validCriteriaForm($event, $data, false)">Cadastrar</v-btn>
+                            </div>
+                            <div v-else>
+                              <v-btn @click="validCriteriaForm($event, $data, true)">Atualizar</v-btn>
+                            </div>
+                            <v-btn @click="closeCriteriaModal" class="ml-5">Fechar</v-btn>
                           </div>
-                          <v-btn @click="criteriaDialog = false" class="ml-5">Fechar</v-btn>
-                        </div>
-                      </v-card-text>
-                    </div>
-                  </v-card>
-                </v-dialog>
-                <v-simple-table>
-                  <template v-slot:default>
-                    <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>Descrição</th>
-                      <th>Perfil</th>
-                      <th>Peso</th>
-                      <th>Ações</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(item, index) in job.criteriaList" :key="item.id">
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.description }}</td>
-                      <td>{{ returnProfileType(item.profiletype) }}</td>
-                      <td>{{ item.weight }}</td>
-                      <td>
-                        <v-btn @click="editCriteria(item, index)">
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                        <v-btn @click="removeCriteria(index)">
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </template>
-                </v-simple-table>
-                <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
-                  <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                  <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                </div>
-                <div class="flex flex-row justify-center">
-                  <v-btn @click.stop="publishJob">Publicar vaga</v-btn>
-                </div>
-              </v-form>
+                        </v-card-text>
+                      </div>
+                    </v-card>
+                  </v-dialog>
+                  <v-simple-table>
+                    <template v-slot:default>
+                      <thead>
+                      <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Perfil</th>
+                        <th>Peso</th>
+                        <th>Ações</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr v-for="(item, index) in job.criteriaList" :key="item.id">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ returnProfileType(item.profiletype) }}</td>
+                        <td>{{ item.weight }}</td>
+                        <td>
+                          <v-btn @click="editCriteria(item, index)">
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-btn>
+                          <v-btn @click="removeCriteria(index)">
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                  <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                  </div>
+                  <div class="flex flex-row justify-center">
+                    <v-btn @click.stop="publishJob" :disabled="invalid">Publicar vaga</v-btn>
+                  </div>
+                </v-form>
+              </ValidationObserver>
             </v-card-text>
           </div>
         </v-card>
@@ -153,11 +204,21 @@
 import {Money} from 'v-money'
 import check from "@/components/check";
 import {mapState, mapMutations} from "vuex";
+import {ValidationProvider, ValidationObserver, setInteractionMode, extend} from 'vee-validate'
+import {required} from 'vee-validate/dist/rules'
+
+extend('required', {
+  ...required,
+  message: 'Campo {_field_} não pode ficar em branco.',
+  computesRequired: true
+})
+
+setInteractionMode('eager')
 
 export default {
   name: "dashboard",
   middleware: ['auth-company'],
-  components: {Money},
+  components: {Money, ValidationProvider, ValidationObserver},
   head() {
     return {
       title: 'Dashboard'
@@ -176,6 +237,7 @@ export default {
       operation: null,
       jobDialog: false,
       criteriaDialog: false,
+      criteriaErrors: [],
       items: [
         {text: 'CLT', value: 1},
         {text: 'PJ', value: 2},
@@ -285,6 +347,27 @@ export default {
     })
   },
   methods: {
+    validCriteriaForm(e, data, isUpdate) {
+      this.criteriaErrors = [];
+
+      if(this.isNullOrWhiteSpace(this.criteria.name)) {
+        this.criteriaErrors.push("O campo Nome é obrigatório.");
+      }
+
+      if(this.isNullOrWhiteSpace(this.criteria.description)) {
+        this.criteriaErrors.push("O campo Descrição é obrigatório.");
+      }
+
+      if(!this.criteriaErrors.length) {
+        if(!isUpdate) {
+          this.addCriteriaModal()
+        } else {
+          this.saveCriteriaModal(data)
+        }
+      }
+
+      e.preventDefault();
+    },
     returnProfileType(profile) {
       switch (profile) {
         case 1:
@@ -314,6 +397,13 @@ export default {
       this.criteria = value
       this.criteria.id = index
       this.criteriaDialog = true;
+    },
+    closeCriteriaModal() {
+      this.criteriaDialog = false;
+      this.criteriaErrors = [];
+    },
+    closeModal() {
+
     },
     saveCriteriaModal(data) {
       let index = data.criteria.id
@@ -345,7 +435,17 @@ export default {
       this.job.company.uid = this.$fire.auth.currentUser.uid
 
       let jobList = {jobList: [this.job]}
-      this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
+      this.$refs.observer.validate().then(result => {
+        if (result) {
+          // this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
+        }
+      }).catch(error => {
+        console.log(error)
+      })
+
+    },
+    isNullOrWhiteSpace(value) {
+      return !value || !value.trim();
     },
     formatDate(date) {
       if (!date) return null

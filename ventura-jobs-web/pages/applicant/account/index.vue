@@ -42,18 +42,12 @@
                             v-model="user.phone"></the-mask>
                 </div>
 
-                <ValidationProvider v-slot="{ errors }" rules="required" name="Nome Fantasia">
-                  <v-text-field label="Nome Fantasia" placeholder="Ventura Jobs HR"
-                                v-model="user.legalRecord.corporateName"
-                                :error-messages="errors"></v-text-field>
-                </ValidationProvider>
-
                 <div class="v-text-field__slot">
-                  <label>CNPJ</label>
-                  <the-mask :mask="[ '##.###.###/####-##']"
-                            placeholder="##.###.###/####-##"
+                  <label>CPF</label>
+                  <the-mask :mask="[ '###.###.###-##']"
+                            placeholder="###.###.###-##"
                             class="v-input__slot mask-input"
-                            v-model="user.legalRecord.cnpj"></the-mask>
+                            v-model="user.legalRecord.cpf"></the-mask>
                 </div>
 
                 <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
@@ -172,8 +166,8 @@ export default {
         this.profileErrors.push("O campo Telefone é obrigatório.");
       }
 
-      if (this.isNullOrWhiteSpace(this.user.legalRecord.cnpj)) {
-        this.profileErrors.push("O campo CNPJ é obrigatório.");
+      if (this.isNullOrWhiteSpace(this.user.legalRecord.cpf)) {
+        this.profileErrors.push("O campo CPF é obrigatório.");
       }
 
       if (this.isNullOrWhiteSpace(this.user.address.postalCode)) {

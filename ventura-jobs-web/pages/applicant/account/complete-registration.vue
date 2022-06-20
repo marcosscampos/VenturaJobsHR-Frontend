@@ -21,17 +21,12 @@
                         v-model="user.phone"></the-mask>
             </div>
 
-            <ValidationProvider v-slot="{ errors }" rules="required" name="Nome">
-              <v-text-field label="Nome Fantasia" placeholder="Ventura Jobs HR"
-                            v-model="user.legalRecord.corporateName" :error-messages="errors"></v-text-field>
-            </ValidationProvider>
-
             <div class="v-text-field__slot">
-              <label>CNPJ</label>
-              <the-mask :mask="[ '##.###.###/####-##']"
-                        placeholder="##.###.###/####-##"
+              <label>CPF</label>
+              <the-mask :mask="[ '###.###.###-##']"
+                        placeholder="###.###.###-##"
                         class="v-input__slot mask-input"
-                        v-model="user.legalRecord.cnpj"></the-mask>
+                        v-model="user.legalRecord.cpf"></the-mask>
             </div>
 
             <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
@@ -104,6 +99,7 @@ extend('required', {
 })
 
 setInteractionMode('eager')
+
 export default {
   name: "complete-registration",
   components: {TheMask, ValidationProvider, ValidationObserver},
@@ -146,7 +142,7 @@ export default {
       if (mutation.type == 'users/CREATE_USER') {
         check.hasError(this.error, result => {
           if (!result) {
-            this.$router.push('/company/dashboard')
+            this.$router.push('/applicant/dashboard')
           }
         })
       }
@@ -160,8 +156,8 @@ export default {
         this.registrationErrors.push("O campo Telefone é obrigatório.");
       }
 
-      if (this.isNullOrWhiteSpace(this.user.legalRecord.cnpj)) {
-        this.registrationErrors.push("O campo CNPJ é obrigatório.");
+      if (this.isNullOrWhiteSpace(this.user.legalRecord.cpf)) {
+        this.registrationErrors.push("O campo CPF é obrigatório.");
       }
 
       if (this.isNullOrWhiteSpace(this.user.address.postalCode)) {
@@ -190,7 +186,6 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 
 </style>

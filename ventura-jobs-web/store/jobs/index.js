@@ -34,7 +34,26 @@ const actions = {
           commit(Mutation.CREATE_JOB, error)
         })
       })
+  },
 
+  async updateDeadLineJob({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$httpClient.$patch('v1/jobs/renew', payload.update).then(response => {
+        commit(Mutation.UPDATE_DEADLINE_JOB, response)
+      }).catch(error => {
+        commit(Mutation.CREATE_JOB, error)
+      })
+    })
+  },
+
+  async closeJob({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$httpClient.$put(`v1/jobs/close`, payload.id).then(response => {
+        commit(Mutation.CLOSE_JOB, response)
+      }).catch(error => {
+        commit(Mutation.CREATE_JOB, error)
+      })
+    })
   }
 }
 
@@ -46,6 +65,22 @@ const mutations = {
     state.jobs = jobs
   },
   [Mutation.CREATE_JOB](state, obj) {
+    if (obj.errors != null) {
+      state.erro = obj;
+    } else {
+      state.erro = null;
+      state.job = obj;
+    }
+  },
+  [Mutation.UPDATE_DEADLINE_JOB](state, obj) {
+    if (obj.errors != null) {
+      state.erro = obj;
+    } else {
+      state.erro = null;
+      state.job = obj;
+    }
+  },
+  [Mutation.CLOSE_JOB](state, obj) {
     if (obj.errors != null) {
       state.erro = obj;
     } else {

@@ -437,7 +437,7 @@ export default {
       let jobList = {jobList: [this.job]}
       this.$refs.observer.validate().then(result => {
         if (result) {
-          // this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
+          this.$store.dispatch({type: 'jobs/createJob', jobList: jobList})
         }
       }).catch(error => {
         console.log(error)

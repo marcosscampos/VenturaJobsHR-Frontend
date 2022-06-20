@@ -35,11 +35,11 @@
               Data Limite: {{ job.deadLine | moment }}
             </p>
           </div>
-          <div>
-            <v-btn>Cancelar</v-btn>
+          <div v-if="job.status != 2 && job.status != 3">
+            <v-btn @click="closeJob">Fechar</v-btn>
           </div>
-          <div>
-            <v-btn>Alterar Data Limite</v-btn>
+          <div v-if="job.status != 3">
+            <v-btn @click="openDeadLineUpdateModal">Alterar Data Limite</v-btn>
           </div>
         </div>
         <div class="ma-10" v-if="jobReport != null && jobReport.userValueList.length > 0">
@@ -106,17 +106,77 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="deadLineDialog" width="500" persistent>
+      <template v-slot:activator="{ on, attrs }">
+      </template>
+      <v-card>
+        <v-card-title>
+          <h1 class="text-center text-2xl font-light mb-4 m-auto"> Atualizar data limite</h1>
+        </v-card-title>
+        <div>
+          <v-card-text>
+            <div v-if="deadLineErrors.length">
+              <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
+              <ul>
+                <li v-for="error in deadLineErrors"
+                    style="color: #ff1744;">{{ error }}
+                </li>
+              </ul>
+            </div>
+            <v-form @submit.prevent="updateDeadLine">
+              <v-menu ref="menu" v-model="menu"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field v-model="computedDateFormatted"
+                                label="Data Limite"
+                                prepend-icon="mdi-calendar"
+                                readonly v-bind="attrs" v-on="on"></v-text-field>
+                </template>
+                <v-date-picker v-model="deadLine"
+                               :active-picker.sync="activePicker"
+                               min="1950-01-01"
+                               @input="menu = false" locale="pt-br"></v-date-picker>
+              </v-menu>
+              <div class="flex flex-row justify-between">
+                <v-btn @click.stop="validDeadLineForm($event)">Atualizar Data Limite</v-btn>
+                <v-btn @click="closeDeadLineModal">Fechar</v-btn>
+              </div>
+            </v-form>
+          </v-card-text>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import 'moment/locale/pt-br';
+import check from "@/components/check";
+import {mapMutations, mapState} from "vuex";
 
 export default {
   name: "companyJob",
+  computed: {
+    computedDateFormatted() {
+      return this.formatDate(this.deadLine)
+    },
+    ...mapState({
+      error: state => state.jobs.erro
+    })
+  },
   data() {
     return {
+      activePicker: null,
+      menu: false,
+      deadLineErrors: [],
+      dateFormatted: null,
       criteriaDialog: false,
+      deadLineDialog: false,
+      deadLine: null,
       headers: [
         {text: "Nome Critério", value: "name"},
         {text: "Resposta Critério", value: "answer"}
@@ -130,19 +190,90 @@ export default {
     };
   },
   middleware: 'auth-jobs',
-  async asyncData({$httpClient, params}) {
+  async asyncData({$httpClient, params, error}) {
     const [job, jobReport, jobApplications] = await Promise.all([
       $httpClient.$get(`/v1/jobs/${params.id}`),
       $httpClient.$get(`/v1/jobs/${params.id}/job-report`),
       $httpClient.$get(`/v1/jobs/${params.id}/job-applications`)
-    ])
+    ]).catch(erro => {
+      error({statusCode: 404, message: erro})
+    });
+
     return {job, jobReport, jobApplications};
+  },
+  beforeDestroy() {
+    this.unsub();
   },
   mounted() {
     this.createObjectCriteriaList();
     this.createReport(this.jobReport);
+
+    this.unsub = this.$store.subscribe((mutation, state) => {
+      if (mutation.type == 'jobs/UPDATE_DEADLINE_JOB') {
+        check.hasError(this.error, result => {
+          if (!result) {
+            this.deadLineDialog = false;
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          }
+        })
+      }
+
+      if (mutation.type == 'jobs/CLOSE_JOB') {
+        check.hasError(this.error, result => {
+          if (!result) {
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          }
+        })
+      }
+    })
   },
   methods: {
+    validDeadLineForm(e) {
+      this.deadLineErrors = [];
+
+      if (this.isNullOrWhiteSpace(this.deadLine)) {
+        this.deadLineErrors.push("O campo Data Limite é obrigatório.");
+      }
+
+      if (!this.deadLineErrors.length) {
+        this.updateDeadLine()
+      }
+
+      e.preventDefault();
+    },
+    formatDate(date) {
+      if (!date) return null
+      return moment(date).format("DD/MM/YYYY");
+    },
+    openDeadLineUpdateModal() {
+      this.deadLineDialog = true;
+    },
+    closeDeadLineModal() {
+      this.deadLineDialog = false;
+      this.deadLineErrors = [];
+      this.deadLine = null;
+    },
+    closeJob() {
+      check.confirm('Tem certeza que deseja fechar a vaga? Não é possível retornar ao estado anterior.', result => {
+        if (result) {
+          let jobId = {
+            id: this.job.id
+          }
+          this.$store.dispatch({type: 'jobs/closeJob', id: jobId})
+        }
+      })
+    },
+    updateDeadLine() {
+      let updatedDeadLine = {
+        id: this.job.id,
+        deadLine: this.deadLine
+      }
+      this.$store.dispatch({type: 'jobs/updateDeadLineJob', update: updatedDeadLine});
+    },
     createObjectCriteriaList() {
       for (let i = 0; i < this.jobApplications.length; i++) {
         for (let item of this.jobApplications[i].criteriaList) {
@@ -184,11 +315,11 @@ export default {
     returnJobStatus(status) {
       switch (status) {
         case 1:
-          return "Publicado"
+          return "Publicada"
         case 2:
-          return "Expirado"
+          return "Expirada"
         case 3:
-          return "Cancelado"
+          return "Fechada"
       }
     },
     returnCriteriaAnswer(answer) {
@@ -204,18 +335,22 @@ export default {
         case 5:
           return "Excelente"
       }
+    },
+    isNullOrWhiteSpace(value) {
+      return !value || !value.trim();
     }
   },
   filters: {
     moment: (date) => {
       if (date != null) {
         moment.locale("pt-br");
-        return moment(date).format("DD/MM/YYYY");
+        return moment(date).add(1, 'days').format("DD/MM/YYYY");
       } else {
         return "";
       }
     },
   },
+  ...mapMutations(['jobs/CLOSE_JOB', 'jobs/UPDATE_DEADLINE_JOB'])
 }
 </script>
 

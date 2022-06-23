@@ -11,7 +11,7 @@
       </div>
       <div class="flex-auto">
         <div class="grid gap-4 grid-cols-1">
-          <v-card v-for="job in jobs" :key="job.id"
+          <v-card v-for="job in jobs.data" :key="job.id"
                   class="card" :to="`/company/publishedJobs/${job.id}`" v-if="!loading">
             <v-card-title class="break-words">{{ job.name }}</v-card-title>
             <v-card-text v-html="job.description"></v-card-text>
@@ -39,6 +39,14 @@
             </v-card-actions>
           </v-card>
         </div>
+        <v-pagination
+          circle
+          v-model="pagination.page"
+          :length="total"
+          total-visible="5"
+          class="m-auto"
+          @input="onChange">
+        </v-pagination>
       </div>
     </div>
   </v-container>
@@ -61,6 +69,11 @@ export default {
   data() {
     return {
       loading: true,
+      pagination: {
+        page: 1,
+        size: 10,
+      },
+      total: 1,
     }
   },
   computed: {
@@ -72,6 +85,7 @@ export default {
     this.unsub = this.$store.subscribe((mutation, state) => {
       if (mutation.type == 'jobs/GET_COMPANY_PUBLISHED_JOBS') {
         this.loading = false;
+        this.total = (Math.ceil(this.jobs.total / this.jobs.pageSize))
       }
     })
   },
@@ -85,8 +99,12 @@ export default {
     }
   },
   methods: {
+    onChange() {
+      this.$router.push({query: {page: this.pagination.page, size: this.pagination.size}});
+      this.getJobs();
+    },
     getJobs() {
-      this.$store.dispatch({type: 'jobs/getCompanyPublishedJobs'})
+      this.$store.dispatch({type: 'jobs/getCompanyPublishedJobs', size: this.pagination.size, page: this.pagination.page})
     },
     returnJobStatus(status) {
       switch (status) {

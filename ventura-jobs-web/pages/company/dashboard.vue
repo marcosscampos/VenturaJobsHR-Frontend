@@ -1,5 +1,8 @@
 <template>
   <v-container>
+    <div v-if="user != null">
+      <p class="text-center">Bem vindo {{user.name}}!</p>
+    </div>
     <div class="grid gap-4 grid-rows-3">
       <v-btn to="/company/publishedJobs"
              :class="$vuetify.theme.dark ? darkClass : lightClass"
@@ -223,6 +226,14 @@ export default {
     return {
       title: 'Dashboard'
     }
+  },
+  async asyncData({$httpClient, error}) {
+    const user = await $httpClient.$get('v1/users/user-token')
+      .catch(erro => {
+        error({statusCode: 404, message: erro})
+      })
+
+    return {user}
   },
   computed: {
     computedDateFormatted() {

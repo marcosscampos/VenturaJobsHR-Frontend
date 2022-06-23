@@ -13,3 +13,10 @@ export function getRole() {
 
   return localStorage.getItem(key)
 }
+
+export function deleteRole() {
+  if (process.server)
+    return;
+
+  return localStorage.removeItem(key)
+}

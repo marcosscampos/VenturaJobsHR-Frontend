@@ -17,7 +17,7 @@ export default async ({app, $axios, redirect}) => {
       }
 
       const response = await $axios.$get('v1/users/user-token', config);
-      if (response == null) {
+      if (response == null || response == "") {
         redirect(`/${getRole()}/account/complete-registration`);
       }
     }

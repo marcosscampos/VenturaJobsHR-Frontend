@@ -2,7 +2,7 @@
   <div class="container">
     <div class="flex">
       <div class="flex-none w-14">
-        <Nuxt-Link to="/company/dashboard" class="arrow__utils">
+        <Nuxt-Link to="/applicant/dashboard" class="arrow__utils">
           <v-btn icon height="50" width="50">
             <v-icon>mdi-chevron-left</v-icon>
           </v-btn>

@@ -40,7 +40,7 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list>
-                  <v-list-item to="/company/login" router exact>
+                  <v-list-item to="/company/login" router exact v-if="!mobile">
                     <v-list-item-action>
                       <v-icon>mdi-briefcase</v-icon>
                     </v-list-item-action>
@@ -92,6 +92,9 @@
 </template>
 
 <script>
+import {deleteToken} from "@/core/services/token";
+import {deleteRole} from "@/core/services/localStorage";
+
 export default {
   name: 'DefaultLayout',
   data() {
@@ -100,11 +103,15 @@ export default {
       drawer: '',
       title: 'Ventura Jobs HR',
       role: '',
+      mobile: false
     }
   },
   beforeMount() {
     this.drawer = !this.isMobile()
     this.$vuetify.theme.dark = (localStorage.getItem("theme") === 'true')
+  },
+  mounted() {
+    this.mobile = this.isMobile()
   },
   methods: {
     toggle() {
@@ -112,6 +119,8 @@ export default {
       localStorage.setItem("theme", this.$vuetify.theme.dark.toString())
     },
     logout() {
+      deleteToken()
+      deleteRole()
       this.$fire.auth.signOut()
       this.$router.push('/')
     },

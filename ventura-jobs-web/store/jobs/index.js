@@ -1,4 +1,5 @@
 import * as Mutation from "@/store/jobs/mutationTypes";
+import {GET_APPLICANT_ANSWERED_JOBS} from "@/store/jobs/mutationTypes";
 
 const state = {
   jobs: [],
@@ -18,7 +19,7 @@ const actions = {
   },
 
   async getCompanyPublishedJobs({commit}, payload) {
-    this.$httpClient.$get('/v1/jobs/company').then(response => {
+    this.$httpClient.$get(`/v1/jobs/company?page=${payload.page}&size=${payload.size}`).then(response => {
       commit(Mutation.GET_COMPANY_PUBLISHED_JOBS, response)
     }, (reason) => {
       commit(Mutation.GET_COMPANY_PUBLISHED_JOBS, reason)
@@ -54,6 +55,16 @@ const actions = {
         commit(Mutation.CREATE_JOB, error)
       })
     })
+  },
+
+  async getJobApplications({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$httpClient.$get(`v1/jobApplications?page=${payload.page}&size=${payload.size}`).then(response => {
+        commit(Mutation.GET_APPLICANT_ANSWERED_JOBS, response)
+      }).catch(error => {
+        commit(Mutation.GET_APPLICANT_ANSWERED_JOBS, error)
+      })
+    })
   }
 }
 
@@ -62,6 +73,9 @@ const mutations = {
     state.jobs = jobs
   },
   [Mutation.GET_COMPANY_PUBLISHED_JOBS](state, jobs) {
+    state.jobs = jobs
+  },
+  [Mutation.GET_APPLICANT_ANSWERED_JOBS](state, jobs) {
     state.jobs = jobs
   },
   [Mutation.CREATE_JOB](state, obj) {

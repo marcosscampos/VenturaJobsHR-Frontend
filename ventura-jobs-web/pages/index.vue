@@ -8,24 +8,40 @@
           <tr>
             <th>Cargo</th>
             <th>Descrição</th>
+            <th>Salário</th>
             <th>Cidade</th>
-            <th>Ações</th>
           </tr>
           </thead>
           <tbody>
           <tr v-for="item in jobs.data" :key="item.id">
             <td>{{ item.name }}</td>
             <td v-html="item.description.slice(0, 50)"></td>
+            <td>R$: {{ formatPrice(item.salary.value) }}</td>
             <td>{{ item.location.city }}</td>
-            <td>
-              <v-btn @click="handleClick(item.id)">
-                <v-icon>mdi-eye</v-icon>
-              </v-btn>
-            </td>
           </tr>
           </tbody>
         </template>
       </v-simple-table>
+    </div>
+    <div>
+      <v-card class="mt-5">
+        <v-card-title>
+          <h1 class="text-center text-2xl font-light mb-4 m-auto">Benefícios de se cadastrar como membro</h1>
+        </v-card-title>
+        <v-card-text>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+            scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
+            electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
+            Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
+            Aldus PageMaker including versions of Lorem Ipsum.
+          </p>
+        </v-card-text>
+        <v-card-subtitle class="ma-auto">
+          <h4 class="text-center text-subtitle-1 mb-4 m-auto">Não tem conta? Clique em Login e cadastre-se!</h4>
+        </v-card-subtitle>
+      </v-card>
     </div>
   </v-container>
 </template>
@@ -77,12 +93,16 @@ export default {
     })
   },
   methods: {
+    formatPrice(value) {
+      if (value != null && value != undefined) {
+        let val = (value / 1).toFixed(2).replace(".", ",");
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
+      return 0;
+    },
     getJobs() {
       this.$store.dispatch({type: 'jobs/getAllJobs', size: 10, page: 1})
     },
-    handleClick(value) {
-      this.$router.push({path: `/jobs/${value}`})
-    }
   },
   beforeDestroy() {
     this.unsub()

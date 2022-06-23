@@ -126,7 +126,7 @@ export default {
           city: null,
           state: null
         },
-        userType: 0,
+        userType: 1,
         legalRecord: {
           corporateName: "",
           cpf: "",

@@ -144,11 +144,7 @@ export default {
     }
   },
   async asyncData({$httpClient, error}) {
-    const user = await $httpClient.$get('v1/users/user-token')
-      .catch(erro => {
-        error({statusCode: 404, message: erro})
-      })
-
+    const user = await $httpClient.$get('v1/users/user-token').catch(err => {error({})})
     return {user}
   },
   mounted() {

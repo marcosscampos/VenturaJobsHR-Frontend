@@ -21,6 +21,13 @@ const actions = {
     }, reason => {
       commit(Mutation.UPDATE_USER, reason)
     })
+  },
+  async getUser({commit}) {
+    this.$httpClient.$get("v1/users/user-token").then(response => {
+      commit(Mutation.GET_USER, response)
+    }, reason => {
+      commit(Mutation.GET_USER, reason)
+    })
   }
 }
 
@@ -40,6 +47,9 @@ const mutations = {
       state.error = null;
       state.user = obj;
     }
+  },
+  [Mutation.GET_USER](state, obj) {
+    state.user = obj
   }
 }
 

@@ -92,8 +92,6 @@
 </template>
 
 <script>
-import {deleteToken} from "@/core/services/token";
-import {deleteRole} from "@/core/services/localStorage";
 
 export default {
   name: 'DefaultLayout',
@@ -118,10 +116,9 @@ export default {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       localStorage.setItem("theme", this.$vuetify.theme.dark.toString())
     },
-    logout() {
-      deleteToken()
-      deleteRole()
-      this.$fire.auth.signOut()
+    async logout() {
+      this.$cookiz.remove("@ventura/token")
+      await this.$fire.auth.signOut();
       this.$router.push('/')
     },
     isMobile() {

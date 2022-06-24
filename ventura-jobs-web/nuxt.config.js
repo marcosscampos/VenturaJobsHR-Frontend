@@ -6,7 +6,7 @@ export default {
   generate: {
     fallback: true
   },
-  
+
   publicRuntimeConfig: {
     axios: {
       browserBaseURL: process.env.NUXT_ENV_API_URL
@@ -65,6 +65,8 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    ['cookie-universal-nuxt', { alias: 'cookiz' }],
+    '@nuxtjs/auth-next',
     [
       '@nuxtjs/firebase',
       {
@@ -86,25 +88,12 @@ export default {
         }
       }
     ],
-    '@nuxtjs/dotenv',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/dotenv'
   ],
 
   router: {
     middleware: ['auth-register']
   },
-
-  // auth: {
-  //   strategies: {
-  //     google: {
-  //       clientId: "353670813955-227179c13o1tff5ue3omguf8ktmo523h.apps.googleusercontent.com",
-  //       clientSecret: "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",
-  //       redirectUri: "https://venturajobshr.firebaseapp.com/__/auth/handler",
-  //       codeChallengeMethod: "",
-  //       responseType: "id_token token",
-  //     }
-  //   }
-  // },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {

@@ -60,7 +60,7 @@
           color="blue"
           text
           v-bind="attrs"
-          @click="snackbar = false">
+          @click="removeCookie">
           Close
         </v-btn>
       </template>
@@ -113,9 +113,23 @@ export default {
     }
   },
   methods: {
+    removeCookie() {
+      this.snackbar = false
+      this.$cookiz.remove('@ventura/token')
+    },
     async onSubmit() {
-      await this.$fire.auth.signInWithEmailAndPassword(this.company.email, this.company.password).then(() => {
-          this.$router.push("/company/dashboard")
+      await this.$fire.auth.signInWithEmailAndPassword(this.company.email, this.company.password).then(async user => {
+        await user.user.getIdTokenResult(true).then(async result => {
+          if(result.claims.role != "company") {
+            await this.$fire.auth.signOut();
+            this.snackbar = true;
+            this.text = "Sua conta é perfil Candidato. Favor, acessar o login de acesso de candidatos."
+          } else {
+            let token = result.token
+            this.$cookiz.set("@ventura/token", token)
+            await this.$router.push("/company/dashboard")
+          }
+        })
       }).catch(() => {
         this.snackbar = true
         this.text = 'Atenção! Usuário ou senha inválidos.'

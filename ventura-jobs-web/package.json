@@ -17,6 +17,7 @@
     "@nuxtjs/firebase": "^8.2.2",
     "@nuxtjs/proxy": "^2.1.0",
     "@vue/composition-api": "^1.6.2",
+    "cookie-universal-nuxt": "^2.2.1",
     "core-js": "^3.19.3",
     "firebase": "^9.6.11",
     "firebase-admin": "^10.1.0",

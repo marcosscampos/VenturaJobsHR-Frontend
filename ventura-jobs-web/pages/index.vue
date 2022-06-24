@@ -60,11 +60,12 @@ export default {
   filters: {
     moment: (date) => {
       if (date != null) {
-        return moment(date).format("DD/MM/YYYY")
+        moment.locale("pt-br");
+        return moment(date).add(1, 'days').format("DD/MM/YYYY");
       } else {
         return "";
       }
-    }
+    },
   },
   head() {
     return {
@@ -79,6 +80,12 @@ export default {
         {text: 'Data Final', value: 'finalDate'},
         {text: 'Cidade', value: 'city'}
       ],
+      filter: {
+        pagination: {
+          page: 1,
+          size: 10,
+        }
+      },
       loading: true
     }
   },
@@ -101,7 +108,8 @@ export default {
       return 0;
     },
     getJobs() {
-      this.$store.dispatch({type: 'jobs/getAllJobs', size: 10, page: 1})
+      let filter = `page=${this.filter.pagination.page}&size=${this.filter.pagination.size}`
+      this.$store.dispatch({type: 'jobs/getAllJobs', filters: filter})
     },
   },
   beforeDestroy() {

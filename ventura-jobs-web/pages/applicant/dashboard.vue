@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <div v-if="user != null">
-      <p class="text-center">Bem vindo {{user.name}}!</p>
+    <div>
+      <h1 class="text-center font-light mb-4 m-auto">Seja bem vindo {{user.name}}!</h1>
     </div>
     <div class="grid">
       <v-btn to="/applicant/account"
@@ -29,7 +29,8 @@
           :page.sync="pagination.page"
           :items-per-page="pagination.size"
           hide-default-footer
-          :search="search"></v-data-table>
+          :search="search">
+        </v-data-table>
         <div class="text-center pt-2">
           <v-pagination
             circle
@@ -52,7 +53,7 @@ import moment from "moment";
 
 export default {
   name: "dashboard",
-  middleware: 'auth-applicant',
+  // middleware: 'auth-applicant',
   head() {
     return {
       title: 'Dashboard'
@@ -83,21 +84,15 @@ export default {
   },
   computed: {
     ...mapState({
-      jobs: state => state.jobs.jobs
+      jobs: state => state.jobs.jobs,
     }),
   },
-  beforeMount() {
-    this.getJobs();
-  },
   async asyncData({$httpClient, error}) {
-    const user = await $httpClient.$get('v1/users/user-token')
-      .catch(erro => {
-        error({statusCode: 404, message: erro})
-      })
-
+    const user = await $httpClient.$get('v1/users/user-token').catch(err => {error({})})
     return {user}
   },
   mounted() {
+    this.getJobs();
     this.unsub = this.$store.subscribe((mutation, state) => {
       if (mutation.type == 'jobs/GET_APPLICANT_ANSWERED_JOBS') {
         this.loading = false;
@@ -108,11 +103,12 @@ export default {
   filters: {
     moment: (date) => {
       if (date != null) {
-        return moment(date).format("DD/MM/YYYY")
+        moment.locale("pt-br");
+        return moment(date).add(1, 'days').format("DD/MM/YYYY");
       } else {
         return "";
       }
-    }
+    },
   },
   methods: {
     onChange() {

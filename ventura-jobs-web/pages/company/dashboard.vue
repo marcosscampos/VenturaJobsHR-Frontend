@@ -1,17 +1,15 @@
 <template>
   <v-container>
-    <div v-if="user != null">
-      <p class="text-center">Bem vindo {{user.name}}!</p>
+    <div>
+      <h1 class="text-center font-light mb-4 m-auto">Seja bem vindo {{user.name}}!</h1>
     </div>
     <div class="grid gap-4 grid-rows-3">
-      <v-btn to="/company/publishedJobs"
-             :class="$vuetify.theme.dark ? darkClass : lightClass"
-             style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
+      <v-btn to="/company/publishedJobs" :class="$vuetify.theme.dark ? darkClass : lightClass"
+        style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
         <span style="word-break: break-word">Vagas publicadas</span>
       </v-btn>
-      <v-btn to="/company/account"
-             :class="$vuetify.theme.dark ? darkClass : lightClass"
-             style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
+      <v-btn to="/company/account" :class="$vuetify.theme.dark ? darkClass : lightClass"
+        style="height: 59px; text-transform: none; font-size: 16px; word-break: break-word">
         <span style="word-break: break-word">Alterar dados da sua conta</span>
       </v-btn>
       <v-dialog max-width="100%" v-model="jobDialog">
@@ -30,7 +28,7 @@
                 <v-form @submit.prevent="publishJob">
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Cargo">
                     <v-text-field label="Cargo" placeholder="Desenvolvedor Java" v-model="job.name"
-                                  :error-messages="errors"></v-text-field>
+                      :error-messages="errors"></v-text-field>
                   </ValidationProvider>
                   <div class="mb-6 mt-4">
                     <h1 class="text-center text-xl font-light m-auto">Salário</h1>
@@ -54,64 +52,50 @@
                     </client-only>
                   </div>
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Empresa">
-                    <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4"
-                                  v-model="job.company.name" :error-messages="errors"></v-text-field>
+                    <v-text-field label="Empresa" placeholder="TOTVS S/A" class="mt-4" v-model="job.company.name"
+                      :error-messages="errors"></v-text-field>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Cidade">
-                    <v-text-field label="Cidade" placeholder="Rio de Janeiro"
-                                  v-model="job.location.city" :error-messages="errors"></v-text-field>
+                    <v-text-field label="Cidade" placeholder="Rio de Janeiro" v-model="job.location.city"
+                      :error-messages="errors"></v-text-field>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Estado">
-                    <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state"
-                                  :error-messages="errors"></v-text-field>
+                    <v-text-field label="Estado" placeholder="RJ" v-model="job.location.state" :error-messages="errors">
+                    </v-text-field>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" rules="required" name="País">
                     <v-text-field label="País" placeholder="Brasil" v-model="job.location.country"
-                                  :error-messages="errors"></v-text-field>
+                      :error-messages="errors"></v-text-field>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Forma de Contratação">
-                    <v-select :items="items" item-text="text"
-                              item-value="value"
-                              :error-messages="errors"
-                              label="Forma de Contratação"
-                              v-model="job.formOfHiring">
+                    <v-select :items="items" item-text="text" item-value="value" :error-messages="errors"
+                      label="Forma de Contratação" v-model="job.formOfHiring">
                     </v-select>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" rules="required" name="Área de Ocupação">
-                    <v-select :items="occupationAreaList"
-                              item-text="text"
-                              item-value="value"
-                              label="Área de ocupação"
-                              v-model="job.occupationArea" :error-messages="errors">
+                    <v-select :items="occupationAreaList" item-text="text" item-value="value" label="Área de ocupação"
+                      v-model="job.occupationArea" :error-messages="errors">
                     </v-select>
                   </ValidationProvider>
-                  <v-menu ref="menu" v-model="menu"
-                          :close-on-content-click="false"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto">
+                  <v-menu ref="menu" v-model="menu" :close-on-content-click="false" transition="scale-transition"
+                    offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
                       <ValidationProvider v-slot="{ errors }" rules="required" name="Data Limite">
-                        <v-text-field v-model="computedDateFormatted"
-                                      label="Data Limite"
-                                      :rules="errors"
-                                      prepend-icon="mdi-calendar"
-                                      readonly v-bind="attrs" v-on="on"></v-text-field>
+                        <v-text-field v-model="computedDateFormatted" label="Data Limite" :rules="errors"
+                          prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on"></v-text-field>
                       </ValidationProvider>
                     </template>
-                    <v-date-picker v-model="job.deadLine"
-                                   :active-picker.sync="activePicker"
-                                   min="1950-01-01"
-                                   @input="menu = false" locale="pt-br"></v-date-picker>
+                    <v-date-picker v-model="job.deadLine" :active-picker.sync="activePicker" min="1950-01-01"
+                      @input="menu = false" locale="pt-br"></v-date-picker>
                   </v-menu>
                   <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
-                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight" />
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight" />
                   </div>
 
                   <h1 class="text-center text-xl font-light mb-4 m-auto">Critérios</h1>
@@ -130,17 +114,15 @@
                           <div v-if="criteriaErrors.length">
                             <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
                             <ul>
-                              <li v-for="error in criteriaErrors"
-                                  style="color: #ff1744;">{{ error }}</li>
+                              <li v-for="error in criteriaErrors" style="color: #ff1744;">{{ error }}</li>
                             </ul>
                           </div>
-                          <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java"
-                                        v-model="criteria.name">
+                          <v-text-field class="w-96" label="Nome" placeholder="Linguagem Java" v-model="criteria.name">
                           </v-text-field>
                           <v-text-field class="w-96" label="Descrição" placeholder="Conhecimento em Java"
-                                        v-model="criteria.description"></v-text-field>
+                            v-model="criteria.description"></v-text-field>
                           <v-select :items="profileList" label="Perfil" item-text="text" item-value="value"
-                                    v-model="criteria.profiletype">
+                            v-model="criteria.profiletype">
                           </v-select>
                           <v-select :items="weightList" label="Peso" v-model="criteria.weight">
                           </v-select>
@@ -160,35 +142,35 @@
                   <v-simple-table>
                     <template v-slot:default>
                       <thead>
-                      <tr>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Perfil</th>
-                        <th>Peso</th>
-                        <th>Ações</th>
-                      </tr>
+                        <tr>
+                          <th>Nome</th>
+                          <th>Descrição</th>
+                          <th>Perfil</th>
+                          <th>Peso</th>
+                          <th>Ações</th>
+                        </tr>
                       </thead>
                       <tbody>
-                      <tr v-for="(item, index) in job.criteriaList" :key="item.id">
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.description }}</td>
-                        <td>{{ returnProfileType(item.profiletype) }}</td>
-                        <td>{{ item.weight }}</td>
-                        <td>
-                          <v-btn @click="editCriteria(item, index)">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                          <v-btn @click="removeCriteria(index)">
-                            <v-icon>mdi-delete</v-icon>
-                          </v-btn>
-                        </td>
-                      </tr>
+                        <tr v-for="(item, index) in job.criteriaList" :key="item.id">
+                          <td>{{ item.name }}</td>
+                          <td>{{ item.description }}</td>
+                          <td>{{ returnProfileType(item.profiletype) }}</td>
+                          <td>{{ item.weight }}</td>
+                          <td>
+                            <v-btn @click="editCriteria(item, index)">
+                              <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
+                            <v-btn @click="removeCriteria(index)">
+                              <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                          </td>
+                        </tr>
                       </tbody>
                     </template>
                   </v-simple-table>
                   <div class="my-7 grid grid-cols-[1fr] gap-x-2 items-center">
-                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
-                    <span :class="$vuetify.theme.dark ? lineDark : lineLight"/>
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight" />
+                    <span :class="$vuetify.theme.dark ? lineDark : lineLight" />
                   </div>
                   <div class="flex flex-row justify-center">
                     <v-btn @click.stop="publishJob" :disabled="invalid">Publicar vaga</v-btn>
@@ -220,20 +202,12 @@ setInteractionMode('eager')
 
 export default {
   name: "dashboard",
-  middleware: ['auth-company'],
+  // middleware: ['auth-company'],
   components: {Money, ValidationProvider, ValidationObserver},
   head() {
     return {
       title: 'Dashboard'
     }
-  },
-  async asyncData({$httpClient, error}) {
-    const user = await $httpClient.$get('v1/users/user-token')
-      .catch(erro => {
-        error({statusCode: 404, message: erro})
-      })
-
-    return {user}
   },
   computed: {
     computedDateFormatted() {
@@ -324,6 +298,10 @@ export default {
   },
   beforeDestroy() {
     this.unsub();
+  },
+  async asyncData({$httpClient, error}) {
+    const user = await $httpClient.$get('v1/users/user-token').catch(err => {error({})})
+    return {user}
   },
   mounted() {
     this.unsub = this.$store.subscribe((mutation, state) => {

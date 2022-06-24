@@ -1,5 +1,4 @@
 import * as Mutation from "@/store/jobs/mutationTypes";
-import {GET_APPLICANT_ANSWERED_JOBS} from "@/store/jobs/mutationTypes";
 
 const state = {
   jobs: [],
@@ -11,7 +10,7 @@ const getters = {}
 
 const actions = {
   async getAllJobs({commit}, payload) {
-    this.$httpClient.$get(`v1/jobs?page=${payload.page}&size=${payload.size}`).then(response => {
+    this.$httpClient.$get(`v1/jobs?${payload.filters}`).then(response => {
       commit(Mutation.GET_ALL_JOBS, response)
     }, (reason) => {
       commit(Mutation.GET_ALL_JOBS, reason)
@@ -19,7 +18,7 @@ const actions = {
   },
 
   async getCompanyPublishedJobs({commit}, payload) {
-    this.$httpClient.$get(`/v1/jobs/company?page=${payload.page}&size=${payload.size}`).then(response => {
+    this.$httpClient.$get(`/v1/jobs/company?${payload.filters}`).then(response => {
       commit(Mutation.GET_COMPANY_PUBLISHED_JOBS, response)
     }, (reason) => {
       commit(Mutation.GET_COMPANY_PUBLISHED_JOBS, reason)
@@ -65,6 +64,17 @@ const actions = {
         commit(Mutation.GET_APPLICANT_ANSWERED_JOBS, error)
       })
     })
+  },
+
+  async applyToJob({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      this.$httpClient.$post('v1/jobApplications', payload.application).then(response => {
+        resolve(response)
+        commit(Mutation.APPLY_TO_JOB, response)
+      })
+    }).catch(error => {
+      commit(Mutation.APPLY_TO_JOB, error)
+    })
   }
 }
 
@@ -95,6 +105,14 @@ const mutations = {
     }
   },
   [Mutation.CLOSE_JOB](state, obj) {
+    if (obj.errors != null) {
+      state.erro = obj;
+    } else {
+      state.erro = null;
+      state.job = obj;
+    }
+  },
+  [Mutation.APPLY_TO_JOB](state, obj) {
     if (obj.errors != null) {
       state.erro = obj;
     } else {

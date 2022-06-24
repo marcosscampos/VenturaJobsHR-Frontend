@@ -1,9 +1,9 @@
-import {getToken, saveToken} from "@/core/services/token";
+export default async ({$axios, redirect, app}, inject) => {
+  const tokenKey = "@ventura/token"
 
-export default async ({ $axios, redirect, app }, inject) => {
-  app.$fire.auth.onAuthStateChanged(async user => {
-    if(user != null) {
-      saveToken((await user.getIdTokenResult(true)).token)
+  app.$fire.auth.onIdTokenChanged(async token => {
+    if(token != null){
+      app.$cookiz.set(tokenKey, (await token.getIdTokenResult(true)).token)
     }
   })
 
@@ -15,31 +15,32 @@ export default async ({ $axios, redirect, app }, inject) => {
         'Access-Control-Allow-Headers': 'Origin, X-Requested-With',
         'Content-Type': 'application/json',
         'Accept': 'application/json, text/plain, */*',
-        'Authorization': 'Bearer ' + getToken()
-      }
+        'authorization': 'Bearer ' + app.$cookiz.get(tokenKey)
+      },
     },
-    credentials: false
+    credentials: true
   })
 
-  $axios.onRequest(config => {
-    // const token = getToken()
+  httpClient.onRequest(config => {
+    let token = app.$cookiz.get(tokenKey)
 
-    // if(token && config.headers) {
-    //   config.headers["Authorization"] = `Bearer ${token}`
-    //
-
-    return config
+    if(token && config.headers.common) {
+      httpClient.setHeader('authorization', 'Bearer ' + token)
+    }
   })
 
-  $axios.onError(error => {
+  httpClient.onResponse(response => {})
+
+  httpClient.onResponseError(error => {
+    console.log(error)
+  })
+
+  httpClient.onError(error => {
     const code = parseInt(error.response && error.response.status)
+    console.log(error)
 
-    if(code === 400)
+    if (code === 400)
       redirect('/400')
-  })
-
-  $axios.onRequestError(err => {
-    console.log(err)
   })
 
   inject('httpClient', httpClient)

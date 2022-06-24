@@ -189,17 +189,16 @@ export default {
       title: `Vaga: ${this.job.name}`,
     };
   },
-  middleware: 'auth-jobs',
   async asyncData({$httpClient, params, error}) {
-    const [job, jobReport, jobApplications] = await Promise.all([
-      $httpClient.$get(`/v1/jobs/${params.id}`),
-      $httpClient.$get(`/v1/jobs/${params.id}/job-report`),
-      $httpClient.$get(`/v1/jobs/${params.id}/job-applications`)
-    ]).catch(erro => {
-      error({statusCode: 404, message: erro})
-    });
+      try {
+        const job = await $httpClient.$get(`/v1/jobs/${params.id}`)
+        const jobReport = await $httpClient.$get(`/v1/jobs/${params.id}/job-report`)
+        const jobApplications = await $httpClient.$get(`/v1/jobs/${params.id}/job-applications`)
 
-    return {job, jobReport, jobApplications};
+        return {job, jobReport, jobApplications};
+      }catch (e) {
+        error({statusCode: 400, message: e})
+      }
   },
   beforeDestroy() {
     this.unsub();

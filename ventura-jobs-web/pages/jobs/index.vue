@@ -16,6 +16,9 @@
           {{ job.deadLine | moment }}
         </v-card-actions>
       </v-card>
+      <div v-if="jobs.data != null && jobs.data.length == 0">
+        <h1 class="text-center text-xl font-light m-auto">Não há registros com o critério pesquisado ou não há vagas publicadas.</h1>
+      </div>
     </div>
     <v-pagination
       circle
@@ -109,7 +112,7 @@ export default {
           size: 10,
         },
         deadLine: '',
-        occupationArea: '',
+        occupationArea: 0,
         salary: 0
       },
       filters: '',
@@ -154,8 +157,11 @@ export default {
   },
   methods: {
     mountFilters() {
+      let minValue = new Date('0001-01-01T00:00:00Z');
+      let dateFiltered = new Date(this.filter.deadLine)
+
       this.filters = `page=${this.filter.pagination.page}&size=${this.filter.pagination.size}`
-      if(this.filter.occupationArea !== "") {
+      if(this.filter.occupationArea !== 0) {
         this.filters += `&occupationArea=${this.filter.occupationArea}`
       }
 
@@ -163,8 +169,8 @@ export default {
         this.filters += `&salary=${this.filter.salary}`
       }
 
-      if(this.filter.deadLine !== "") {
-        this.filters += `&deadLine=${moment(this.filter.deadLine).format("YYYY/MM/DD")}`
+      if(dateFiltered > minValue && this.filter.deadLine != undefined) {
+        this.filters += `&deadLine=${moment(this.filter.deadLine).format("YYYY-MM-DD")}`
       }
     },
     searchJobs() {
@@ -172,9 +178,9 @@ export default {
       this.$store.dispatch({type: 'jobs/getAllJobs', filters: this.filters})
 
       this.drawer = false;
-      this.filter.salary = ''
+      this.filter.salary = 0
       this.filter.deadLine = ''
-      this.filter.occupationArea = ''
+      this.filter.occupationArea = 0
     },
     formatDate(date) {
       if (!date) return null
@@ -188,9 +194,9 @@ export default {
       let filter = `page=${this.filter.pagination.page}&size=${this.filter.pagination.size}`
       this.$store.dispatch({type: 'jobs/getAllJobs', filters: filter})
 
-      this.filter.salary = ''
+      this.filter.salary = 0
       this.filter.deadLine = ''
-      this.filter.occupationArea = ''
+      this.filter.occupationArea = 0
     }
   },
   getJob(id) {

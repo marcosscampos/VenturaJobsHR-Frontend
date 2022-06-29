@@ -42,6 +42,11 @@
               {{ job.deadLine | moment }}
             </v-card-actions>
           </v-card>
+          <div v-if="jobs.data != null && jobs.data.length == 0">
+            <h1
+              class="text-center text-xl font-light m-auto"
+              style="margin: 10px 10px;">Não há registros com o critério pesquisado ou não há vagas publicadas.</h1>
+          </div>
         </div>
         <v-pagination
           circle
@@ -126,7 +131,7 @@ export default {
           size: 10,
         },
         deadLine: '',
-        occupationArea: '',
+        occupationArea: 0,
         salary: 0
       },
       occupationAreaList: [
@@ -184,17 +189,20 @@ export default {
       return moment(date).format("DD/MM/YYYY");
     },
     mountFilters() {
+      let minValue = new Date('0001-01-01T00:00:00Z');
+      let dateFiltered = new Date(this.filter.deadLine)
+
       this.filters = `page=${this.filter.pagination.page}&size=${this.filter.pagination.size}`
-      if (this.filter.occupationArea !== "") {
+      if(this.filter.occupationArea !== 0) {
         this.filters += `&occupationArea=${this.filter.occupationArea}`
       }
 
-      if (this.filter.salary !== 0) {
+      if(this.filter.salary !== 0) {
         this.filters += `&salary=${this.filter.salary}`
       }
 
-      if (this.filter.deadLine !== "") {
-        this.filters += `&deadLine=${moment(this.filter.deadLine).format("YYYY/MM/DD")}`
+      if(dateFiltered > minValue && this.filter.deadLine != undefined) {
+        this.filters += `&deadLine=${moment(this.filter.deadLine).format("YYYY-MM-DD")}`
       }
     },
     searchJobs() {
@@ -202,9 +210,9 @@ export default {
       this.$store.dispatch({type: 'jobs/getCompanyPublishedJobs', filters: this.filters})
 
       this.drawer = false;
-      this.filter.salary = ''
+      this.filter.salary = 0
       this.filter.deadLine = ''
-      this.filter.occupationArea = ''
+      this.filter.occupationArea = 0
     },
     onChange() {
       this.$router.push({query: {page: this.filter.pagination.page, size: this.filter.pagination.size}});
@@ -214,9 +222,9 @@ export default {
       let filter = `page=${this.filter.pagination.page}&size=${this.filter.pagination.size}`
 
       this.$store.dispatch({type: 'jobs/getCompanyPublishedJobs', filters: filter})
-      this.filter.salary = ''
+      this.filter.salary = 0
       this.filter.deadLine = ''
-      this.filter.occupationArea = ''
+      this.filter.occupationArea = 0
     },
     returnJobStatus(status) {
       switch (status) {
